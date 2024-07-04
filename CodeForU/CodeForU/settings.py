@@ -77,10 +77,16 @@ WSGI_APPLICATION = 'CodeForU.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'default': {
+            'ENGINE': 'djongo',
+            'NAME': 'CodeForU',
+            'ENFORCE_SCHEMA': False,
+            'CLIENT': {
+                'host': 'mongodb+srv://Admin:Project14@codeforu.d4rianx.mongodb.net/?retryWrites=true&w=majority&appName=CodeForU',
+                'username':'Admin',
+                'password':'Project14'
+            }  
+        }
 }
 
 
