@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker images using Docker Compose
-                    sh 'docker-compose -f $COMPOSE_FILE build'
+                    powershell 'docker-compose -f $COMPOSE_FILE build'
                 }
             }
         }
@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     // Run tests using the Django test framework
-                    sh 'docker-compose -f $COMPOSE_FILE run web python CodeForU/manage.py test'
+                    powershell 'docker-compose -f $COMPOSE_FILE run web python CodeForU/manage.py test'
                 }
             }
         }
@@ -30,8 +30,8 @@ pipeline {
             steps {
                 script {
                     // Deploy the application using Docker Compose
-                    sh 'docker-compose -f $COMPOSE_FILE pull'
-                    sh 'docker-compose -f $COMPOSE_FILE up -d'
+                    powershell 'docker-compose -f $COMPOSE_FILE pull'
+                    powershell 'docker-compose -f $COMPOSE_FILE up -d'
                 }
             }
         }
@@ -41,7 +41,7 @@ pipeline {
         always {
             script {
                 // Cleanup any dangling images
-                sh 'docker image prune -f'
+                powershell 'docker image prune -f'
             }
         }
     }
