@@ -5,8 +5,8 @@ pipeline {
         DOCKER_IMAGE = 'mohamadaj/bs-pmc-2024-team14-web:latest'
         REGISTRY = 'docker.io'
         REGISTRY_CREDENTIALS = 'docker-hub-credentials'  // Jenkins credentials ID for Docker Hub
-        DOCKERFILE_PATH = '../'
-        BUILD_CONTEXT = '../'
+        DOCKERFILE_PATH = 'dockerfile'  // Path to your Dockerfile within the project
+        BUILD_CONTEXT = '.'  // Build context is the root of your project
     }
 
     stages {
@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     // Run Django tests inside the Docker container with specified platform
-                    sh 'docker run --rm --platform linux/amd64 $DOCKER_IMAGE python manage.py test'
+                    sh 'docker run --rm --platform linux/amd64 $DOCKER_IMAGE python CodeForU/manage.py test'
                 }
             }
         }
