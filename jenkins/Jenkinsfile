@@ -2,35 +2,28 @@ pipeline {
     agent any
 
     environment {
-        // Set your project name and Docker image names here
-        PROJECT_NAME = 'CodeForU'
-        DJANGO_IMAGE_NAME = 'mohamadaj/bs-pmc-2024-team14-web:latest'
-        MONGO_IMAGE_NAME = 'mohamadaj/mongo:latest'
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+        DOCKER_IMAGE = 'mohamadaj/bs-pmc-2024-team14-web:latest'
+        REGISTRY = 'docker.io'
+        REGISTRY_CREDENTIALS = 'docker-hub-credentials'  // Jenkins credentials ID for Docker Hub
+        DOCKERFILE_PATH = 'dockerfile'  // Path to your Dockerfile within the project
+        BUILD_CONTEXT = '.'  // Build context is the root of your project
     }
 
     stages {
-        stage('Clone repository') {
-            steps {
-                // Replace with your GitHub repository URL
-                git 'https://github.com/BS-PMC-2024/BS-PMC-2024-Team14.git'
-            }
-        }
-
-        stage('Build Docker Images') {
+        stage('Clean Up Old Docker Images') {
             steps {
                 script {
-                    // Adjust Dockerfile paths if needed
-                    docker.build("${env.DJANGO_IMAGE_NAME}", '-f dockerfile .')
-                    docker.build("${env.MONGO_IMAGE_NAME}", '-f dockerfile .')
+                    // Clean up old Docker images
+                    sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
                 }
             }
         }
 
-        stage('Run Docker Compose') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker-compose -f ${env.DOCKER_COMPOSE_FILE} up -d"
+                    // Build Docker image for linux/amd64 platform
+                    sh 'docker buildx build --platform linux/amd64 -t $DOCKER_IMAGE -f $DOCKERFILE_PATH $BUILD_CONTEXT --load'
                 }
             }
         }
@@ -38,18 +31,18 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Adjust container name and test command as necessary
-                    sh "docker-compose -f ${env.DOCKER_COMPOSE_FILE} exec bs-pmc-2024-team14 python manage.py test"
+                    // Run Django tests inside the Docker container with specified platform
+                    sh 'docker run --rm --platform linux/amd64 $DOCKER_IMAGE python CodeForU/manage.py test'
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Clean Up Docker Containers') {
             steps {
                 script {
-                    // Define your deployment steps here, e.g., re-deploy with production settings
-                    // This could include another docker-compose command or other deployment steps
-                }
+                    // Clean up Docker containers
+                    sh 'docker container prune -f'
+                }a
             }
         }
     }
@@ -57,14 +50,9 @@ pipeline {
     post {
         always {
             script {
-                sh "docker-compose -f ${env.DOCKER_COMPOSE_FILE} down"
+                // Clean up Docker images after the pipeline run
+                sh 'docker rmi -f $DOCKER_IMAGE || true'
             }
-        }
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed.'
         }
     }
 }
