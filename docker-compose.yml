@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    image: bs-pmc-2024-team14-web:latest
+    image: mohamadaj/bs-pmc-2024-team14-web:latest  # Updated image name with Docker Hub username
     command: python CodeForU/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
@@ -11,7 +11,7 @@ services:
     depends_on:
       - mongo
     environment:
-      - DJANGO_SETTINGS_MODULE=CodeForU.settings  # Replace with your project's settings module path
+      - DJANGO_SETTINGS_MODULE=CodeForU.CodeForU.settings
       - DATABASE_URL=mongodb+srv://Admin:Project14@codeforu.d4rianx.mongodb.net/?retryWrites=true&w=majority&appName=CodeForU
 
   mongo:

@@ -2,27 +2,33 @@ pipeline {
     agent any
 
     environment {
-        // Set your project name and Docker image names here
         PROJECT_NAME = 'CodeForU'
         DJANGO_IMAGE_NAME = 'mohamadaj/bs-pmc-2024-team14-web:latest'
-        MONGO_IMAGE_NAME = 'mohamadaj/mongo:latest'
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'  // Your Jenkins credentials ID for Docker Hub
     }
 
     stages {
         stage('Clone repository') {
             steps {
-                // Replace with your GitHub repository URL
                 git 'https://github.com/BS-PMC-2024/BS-PMC-2024-Team14.git'
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Adjust Dockerfile paths if needed
-                    docker.build("${env.DJANGO_IMAGE_NAME}", '-f dockerfile .')
-                    docker.build("${env.MONGO_IMAGE_NAME}", '-f dockerfile .')
+                    // Log in to Docker Hub
+                    withCredentials([usernamePassword(credentialsId: env.DOCKER_HUB_CREDENTIALS, passwordVariable: 'DOCKER_HUB_PASS', usernameVariable: 'DOCKER_HUB_USER')]) {
+                        sh """
+                            echo \$DOCKER_HUB_PASS | docker login -u \$DOCKER_HUB_USER --password-stdin
+                        """
+                    }
+                    // Build and push Django Docker image
+                    sh """
+                        docker build -t ${env.DJANGO_IMAGE_NAME} .
+                        docker push ${env.DJANGO_IMAGE_NAME}
+                    """
                 }
             }
         }
@@ -38,17 +44,21 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Adjust container name and test command as necessary
-                    sh "docker-compose -f ${env.DOCKER_COMPOSE_FILE} exec bs-pmc-2024-team14 python manage.py test"
+                    sh "docker-compose -f ${env.DOCKER_COMPOSE_FILE} exec web python CodeForU/manage.py test"
                 }
             }
         }
 
         stage('Deploy') {
+            when {
+                branch 'main'  // Deploy only when on the main branch
+            }
             steps {
                 script {
-                    // Define your deployment steps here, e.g., re-deploy with production settings
-                    // This could include another docker-compose command or other deployment steps
+                    sh """
+                        docker-compose -f ${env.DOCKER_COMPOSE_FILE} pull
+                        docker-compose -f ${env.DOCKER_COMPOSE_FILE} up -d
+                    """
                 }
             }
         }
