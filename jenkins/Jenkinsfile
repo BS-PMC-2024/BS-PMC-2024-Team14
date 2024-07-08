@@ -1,18 +1,13 @@
 pipeline {
     agent any
 
-    environment {
-        COMPOSE_FILE = 'docker-compose.yml'
-    }
-
     stages {
-        
-        
-        stage('Build Docker Images') {
+        stage('Pull Docker Images') {
             steps {
                 script {
-                    // Build Docker images using Docker Compose
-                    powershell 'docker-compose -f $COMPOSE_FILE build'
+                    // Pull the pre-built Docker images
+                    sh 'docker pull bs-pmc-2024-team14-web:latest'
+                    sh 'docker pull mongo:latest'
                 }
             }
         }
@@ -20,8 +15,8 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run tests using the Django test framework
-                    powershell 'docker-compose -f $COMPOSE_FILE run web python CodeForU/manage.py test'
+                    // Run tests using the pulled Docker image for web
+                    sh 'docker run --rm bs-pmc-2024-team14-web:latest python CodeForU/manage.py test'
                 }
             }
         }
@@ -30,8 +25,7 @@ pipeline {
             steps {
                 script {
                     // Deploy the application using Docker Compose
-                    powershell 'docker-compose -f $COMPOSE_FILE pull'
-                    powershell 'docker-compose -f $COMPOSE_FILE up -d'
+                    sh 'docker-compose -f docker-compose.yml up -d'
                 }
             }
         }
@@ -41,7 +35,7 @@ pipeline {
         always {
             script {
                 // Cleanup any dangling images
-                powershell 'docker image prune -f'
+                sh 'docker image prune -f'
             }
         }
     }
