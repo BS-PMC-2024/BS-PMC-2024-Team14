@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    environment {
+        COMPOSE_FILE = 'docker-compose.yml'
+    }
+
+    stages {
+        
+        
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    // Build Docker images using Docker Compose
+                    sh 'docker-compose -f $COMPOSE_FILE build'
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Run tests using the Django test framework
+                    sh 'docker-compose -f $COMPOSE_FILE run web python CodeForU/manage.py test'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Deploy the application using Docker Compose
+                    sh 'docker-compose -f $COMPOSE_FILE pull'
+                    sh 'docker-compose -f $COMPOSE_FILE up -d'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Cleanup any dangling images
+                sh 'docker image prune -f'
+            }
+        }
+    }
+}
