@@ -1,7 +1,5 @@
 from django.test import TestCase
+from users import tests as user_tests
 
-class BasicMathTestCase(TestCase):
-    def test_addition(self):
-        """Test addition of two numbers"""
-        self.assertEqual(2 + 2, 4)
+
 
