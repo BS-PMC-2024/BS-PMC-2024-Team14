@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap5',
     'users',
+
 ]
 
 MIDDLEWARE = [
@@ -58,6 +59,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR/'templates'],
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,12 +75,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'CodeForU.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 import sys
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+
 if 'test' in sys.argv or 'test_coverage' in sys.argv:
     DATABASES = {
         'default': {
@@ -99,7 +99,6 @@ else:
             }  
         }
     }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
