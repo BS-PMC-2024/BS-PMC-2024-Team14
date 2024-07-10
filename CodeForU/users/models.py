@@ -37,7 +37,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=30, verbose_name="First Name")
     last_name = models.CharField(max_length=30, verbose_name="Last Name")
     birth_date = models.DateField(verbose_name="Birth Date")
-    email = models.EmailField(unique=True, verbose_name="Email Address")
+    email = models.EmailField(unique=True, verbose_name="Email Address", db_index=True)  # Index added
     phone = models.CharField(verbose_name="Phone", max_length=10)
     app_rating = models.IntegerField(blank=True, null=True, default=0, verbose_name="App Rating")
     level = models.IntegerField(verbose_name="Student Level", blank=True, null=True, default=0)

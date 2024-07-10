@@ -76,7 +76,18 @@ WSGI_APPLICATION = 'CodeForU.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
+import sys
+# Database
+# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+if 'test' in sys.argv or 'test_coverage' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+else:
+    DATABASES = {
         'default': {
             'ENGINE': 'djongo',
             'NAME': 'CodeForU',
@@ -87,7 +98,7 @@ DATABASES = {
                 'password':'Project14'
             }  
         }
-}
+    }
 
 
 # Password validation

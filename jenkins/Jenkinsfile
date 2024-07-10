@@ -2,17 +2,28 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_FILE = 'docker-compose.yml'
+        DOCKER_IMAGE = 'mohamadaj/bs-pmc-2024-team14-web'
+        REGISTRY = 'docker.io'
+        REGISTRY_CREDENTIALS = 'docker-hub-14'  // Jenkins credentials ID for Docker Hub
+        DOCKERFILE_PATH = 'dockerfile'
+        BUILD_CONTEXT = '.'
     }
 
     stages {
-        
-        
-        stage('Build Docker Images') {
+        stage('Clean Up Old Docker Images') {
             steps {
                 script {
-                    // Build Docker images using Docker Compose
-                    sh 'docker-compose -f $COMPOSE_FILE build'
+                    // Clean up old Docker images
+                    sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build Docker image for linux/amd64 platform
+                    sh 'docker buildx build --platform linux/amd64 -t $DOCKER_IMAGE -f $DOCKERFILE_PATH $BUILD_CONTEXT --load'
                 }
             }
         }
@@ -20,18 +31,17 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run tests using the Django test framework
-                    sh 'docker-compose -f $COMPOSE_FILE run web python CodeForU/manage.py test'
+                    // Run Django tests inside the Docker container with specified platform
+                    sh 'docker run --rm --platform linux/amd64 $DOCKER_IMAGE python CodeForU/manage.py test CodeForU.tests'
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Clean Up Docker Containers') {
             steps {
                 script {
-                    // Deploy the application using Docker Compose
-                    sh 'docker-compose -f $COMPOSE_FILE pull'
-                    sh 'docker-compose -f $COMPOSE_FILE up -d'
+                    // Clean up Docker containers
+                    sh 'docker container prune -f'
                 }
             }
         }
@@ -40,8 +50,8 @@ pipeline {
     post {
         always {
             script {
-                // Cleanup any dangling images
-                sh 'docker image prune -f'
+                // Clean up Docker images after the pipeline run
+                sh 'docker rmi -f $DOCKER_IMAGE || true'
             }
         }
     }
