@@ -4,6 +4,22 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import CustomAuthenticationForm
 from .models import Mentor,Student
+from .forms import UserRegistrationForm
+
+def get_mentor_ids():
+    return [
+        '1234567890',
+        '2345678901',
+        '3456789012',
+        '4567890123',
+        '5678901234',
+        '6789012345',
+        '7890123456',
+        '8901234567',
+        '9012345678',
+        '0123456789',
+        # Add more fake IDs as needed
+    ]
 
 
 def login_view(request):
@@ -32,6 +48,8 @@ def login_view(request):
                     return redirect('users:student_dashboard')
                 except Student.DoesNotExist:
                     pass
+
+                return redirect('users:student_dashboard')
                 
                 # If user is neither a mentor nor a student
                 messages.error(request, 'Invalid role')
@@ -45,7 +63,49 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 def register_view(request):
-    return render(request, 'register.html')
+    mentor_ids = get_mentor_ids()  # Assuming you have a function to get mentor IDs
+
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+
+            if user.passport_id in mentor_ids:  # Check if passport ID is in the list of mentor IDs
+                mentor = Mentor.objects.create(
+                    email=user.email,
+                    first_name=user.first_name,
+                    last_name=user.last_name,
+                    birth_date=user.birth_date,
+                    phone=user.phone,
+                    gender=user.gender,
+                    passport_id=user.passport_id,
+                    additional_field_mentor='Additional Mentor Field Value'  # Add additional fields for mentors here
+                )
+                mentor.set_password(form.cleaned_data['password'])
+                mentor.save()
+            else:
+                student = Student.objects.create(
+                    email=user.email,
+                    first_name=user.first_name,
+                    last_name=user.last_name,
+                    birth_date=user.birth_date,
+                    phone=user.phone,
+                    gender=user.gender,
+                    passport_id=user.passport_id,
+                    additional_field_student='Additional Student Field Value'  # Add additional fields for students here
+                )
+                student.set_password(form.cleaned_data['password'])
+                student.save()
+
+            messages.success(request, "Registration successful.")
+            return redirect('users:login')
+        else:
+            messages.error(request, "Registration failed. Please correct the errors below.")
+    else:
+        form = UserRegistrationForm()
+
+    return render(request, 'register.html', {'form': form})
 
 @login_required
 def mentor_dashboard(request):

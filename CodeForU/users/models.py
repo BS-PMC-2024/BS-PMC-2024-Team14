@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, phone, birth_date, password=None):
+    def create_user(self, email, first_name, last_name, phone, birth_date,p_id, password=None):
         if not email:
             raise ValueError("Email is required")
         if not phone:
@@ -12,20 +12,23 @@ class UserManager(BaseUserManager):
             first_name=first_name,
             last_name=last_name,
             phone=phone,
-            birth_date=birth_date
+            birth_date=birth_date,
+            passport_id = p_id,
         )
         user.set_password(password)
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, email, first_name, last_name, phone, birth_date, password=None):
+    def create_superuser(self, email, first_name, last_name, phone, birth_date,p_id, password=None):
         user = self.create_user(
             email=self.normalize_email(email),
             first_name=first_name,
             last_name=last_name,
             phone=phone,
             birth_date=birth_date,
-            password=password
+            password=password,
+            passport_id = p_id,
+
         )
         user.is_admin = True
         user.is_superuser = True
@@ -34,6 +37,7 @@ class UserManager(BaseUserManager):
         return user
 
 class User(AbstractUser):
+    passport_id = models.CharField(max_length=10,unique=True, blank=False,verbose_name="Passport ID")
     first_name = models.CharField(max_length=30, verbose_name="First Name")
     last_name = models.CharField(max_length=30, verbose_name="Last Name")
     birth_date = models.DateField(verbose_name="Birth Date")
@@ -44,9 +48,11 @@ class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    gender = models.CharField(max_length=10, verbose_name="Gender", choices=[('Male', 'Male'), ('Female', 'Female')], default='Male')
+
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'birth_date', 'phone']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'birth_date', 'phone','gender','passport_id']
 
     objects = UserManager()
 
