@@ -5,7 +5,6 @@ from django.shortcuts import redirect, render
 
 from .forms import CustomAuthenticationForm
 from .models import Mentor, Student
-from .models import Mentor, Student
 
 
 def login_view(request):
