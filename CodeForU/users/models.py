@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, phone, birth_date,p_id, password=None):
+    def create_user(self, email, first_name, last_name, phone, birth_date,passport_id,gender, password=None):
         if not email:
             raise ValueError("Email is required")
         if not phone:
@@ -13,13 +13,14 @@ class UserManager(BaseUserManager):
             last_name=last_name,
             phone=phone,
             birth_date=birth_date,
-            passport_id = p_id,
+            passport_id = passport_id,
+            gender = gender,
         )
         user.set_password(password)
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, email, first_name, last_name, phone, birth_date,p_id, password=None):
+    def create_superuser(self, email, first_name, last_name, phone, birth_date,passport_id,gender, password=None):
         user = self.create_user(
             email=self.normalize_email(email),
             first_name=first_name,
@@ -27,7 +28,8 @@ class UserManager(BaseUserManager):
             phone=phone,
             birth_date=birth_date,
             password=password,
-            passport_id = p_id,
+            passport_id = passport_id,
+            gender = gender,
 
         )
         user.is_admin = True
@@ -43,8 +45,6 @@ class User(AbstractUser):
     birth_date = models.DateField(verbose_name="Birth Date")
     email = models.EmailField(unique=True, verbose_name="Email Address", db_index=True)  # Index added
     phone = models.CharField(verbose_name="Phone", max_length=10)
-    app_rating = models.IntegerField(blank=True, null=True, default=0, verbose_name="App Rating")
-    level = models.IntegerField(verbose_name="Student Level", blank=True, null=True, default=0)
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -86,15 +86,14 @@ class User(AbstractUser):
             return False
 
 class Student(User):
-    additional_field_student = models.CharField(max_length=100, verbose_name="Additional Field for Student")
-
+    level = models.IntegerField(verbose_name="Student Level", blank=True, null=True, default=0)
+    
     class Meta:
         verbose_name = 'Student'
         verbose_name_plural = 'Students'
 
 class Mentor(User):
-    additional_field_mentor = models.CharField(max_length=100, verbose_name="Additional Field for Mentor")
-
+    is_approved = models.BooleanField(default=False)
     class Meta:
         verbose_name = 'Mentor'
         verbose_name_plural = 'Mentors'

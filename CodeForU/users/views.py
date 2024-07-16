@@ -49,7 +49,7 @@ def login_view(request):
                 except Student.DoesNotExist:
                     pass
 
-                return redirect('users:student_dashboard')
+                #return redirect('users:student_dashboard')
                 
                 # If user is neither a mentor nor a student
                 messages.error(request, 'Invalid role')
@@ -70,7 +70,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
-
+            '''
             if user.passport_id in mentor_ids:  # Check if passport ID is in the list of mentor IDs
                 mentor = Mentor.objects.create(
                     email=user.email,
@@ -85,18 +85,19 @@ def register_view(request):
                 mentor.set_password(form.cleaned_data['password'])
                 mentor.save()
             else:
-                student = Student.objects.create(
-                    email=user.email,
-                    first_name=user.first_name,
-                    last_name=user.last_name,
-                    birth_date=user.birth_date,
-                    phone=user.phone,
-                    gender=user.gender,
-                    passport_id=user.passport_id,
-                    additional_field_student='Additional Student Field Value'  # Add additional fields for students here
-                )
-                student.set_password(form.cleaned_data['password'])
-                student.save()
+            '''
+            student = Student.objects.create(
+                email=user.email,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                birth_date=user.birth_date,
+                phone=user.phone,
+                gender=user.gender,
+                passport_id=user.passport_id,
+                level=0  # Add additional fields for students here
+            )
+            student.set_password(form.cleaned_data['password'])
+            student.save()
 
             messages.success(request, "Registration successful.")
             return redirect('users:login')
