@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+Sign Up
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Register</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->    
+    <link rel="icon" type="image/png" href={% static "img/icons/favicon.ico" %}/>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href={% static "fonts/font-awesome-4.7.0/css/font-awesome.min.css" %}>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href={% static "css/util.css" %}>
+    <link rel="stylesheet" type="text/css" href={% static "css/style.css" %}>
+    <!--===============================================================================================-->
+    <script>
+        function enableEditing() {
+            document.getElementById('first_name').disabled = false;
+            document.getElementById('last_name').disabled = false;
+            document.getElementById('phone').disabled = false;
+            document.getElementById('email').disabled = false;
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('submitButton').style.display = 'inline';
+            document.getElementById('cancelButton').style.display = 'inline';
+            document.getElementById('deleteButton').style.display = 'inline';
+
+        }
+
+        function cancelEditing() {
+            location.reload()
+        }
+        function confirmDelete(event) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            if (confirm("Are you sure you want to delete the account?")) {
+                // If user confirms, continue with form submission
+                document.getElementById("deleteButton").value = "delete";  // Set action value
+                console.log("here")
+                document.getElementById("update-form").submit();
+            } else {
+                // If user cancels, do nothing
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins">
+        <div class="wrapper wrapper--w780" >
+            <div class="card card-4">
+                <div class="card-body">
+                    <h2 class="title">{{ mentor.first_name }} Profile</h2>
+                    <img src={% static  "img/logo.png" %} alt="IMG" class="logo">
+                    <form id="update-form" method="post">
+                        {% csrf_token %}
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">First Name</label>
+                                    <input class="input--style-4" id="first_name" disabled type="text" name="first_name" value="{{ mentor.first_name }}" required>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Last Name</label>
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <input class="input--style-4" id="last_name" disabled type="text" name="last_name" value="{{ mentor.last_name }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">ID</label>
+                                    <input class="input--style-4" id="passport_id" disabled type="text" name="passport_id" value="{{ mentor.passport_id }}" >
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Phone</label>
+                                    <input class="input--style-4" id="phone" disabled type="text" name="phone" value="{{ mentor.phone }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">E-mail</label>
+                                    <input class="input--style-4" id="email" disabled type="email" name="email" value="{{ mentor.email }}" required>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group" >
+                                    <label class="label">Birthday</label>
+                                    <input class="input--style-4" type="text" disabled name="birth_date" value="{{ mentor.birth_date }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Gender</label>
+                                    <input class="input--style-4" type="text" disabled name="gender" value="{{ mentor.gender }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2 d-flex ">
+                                <div class="input-group d-flex justify-content-between">
+                                    <button class="btn btn-primary px-4" style="background:#9954ae; border:none; border-radius:8px; font-weight:100;" id="editButton" onClick="enableEditing()" type="button">Edit</button>
+                                    <button class="btn btn-primary px-3" id="submitButton" style="border-radius:8px; font-weight:100; display:none;" type="submit" name="action" value="submit" >Submit</button>
+                                    <button class="btn btn-secondary px-3" id="cancelButton" style="border-radius:8px; font-weight:100; display:none;" type="button" onClick="cancelEditing()"  >Cancel</button><button class="btn btn-danger px-3" id="deleteButton" style="border-radius:8px; font-weight:100; display:none;" type="button" name="action" value="delete" onClick="confirmDelete(event)">Delete</button>                                    
+                                </div>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src={% static "js/main.js" %}></script>
+</body>
+</html>
+{% endblock %}

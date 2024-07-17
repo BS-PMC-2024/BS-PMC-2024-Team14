@@ -164,3 +164,71 @@ class StudentProfileTests(TestCase):
 
         # Check if the response redirects back to the student profile page
         self.assertRedirects(response, reverse("users:student_profile"))
+
+
+class MentorProfileTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+        # Create a mentor profile for testing
+        self.mentor = Mentor.objects.create(
+            email="testuser@example.com",
+            first_name="John",
+            last_name="Doe",
+            birth_date="1990-01-01",
+            phone="1234567890",
+            passport_id="ABCDE12345",  # Ensure this is unique for each test run
+            gender="Male",
+        )
+
+        # Log the mentor in using force_login
+        self.user = self.mentor.user_ptr  # Assuming mentor inherits from User
+        self.client.force_login(self.user)
+
+    def test_delete_mentor_profile(self):
+        # Ensure mentor profile exists
+        self.assertTrue(Mentor.objects.filter(email=self.mentor.email).exists())
+
+        # Make a POST request to delete the mentor profile
+        response = self.client.post(
+            reverse("users:mentor_profile"),
+            {"user_id": self.mentor.id, "action": "delete"},
+        )
+
+        # Check if the mentor profile is deleted
+        self.assertFalse(Mentor.objects.filter(email=self.mentor.email).exists())
+
+        # Check if the response redirects to the login page
+        self.assertRedirects(response, reverse("users:login"))
+
+    def test_edit_mentor_profile(self):
+        # Ensure mentor profile exists
+        self.assertTrue(Mentor.objects.filter(email=self.mentor.email).exists())
+
+        # Make a POST request to edit the mentor profile
+        updated_first_name = "Jane"
+        updated_last_name = "Doe"
+        updated_phone = "9876543210"
+        updated_email = "updated_email@example.com"
+
+        response = self.client.post(
+            reverse("users:mentor_profile"),
+            {
+                "user_id": self.mentor.id,
+                "action": "submit",
+                "first_name": updated_first_name,
+                "last_name": updated_last_name,
+                "phone": updated_phone,
+                "email": updated_email,
+            },
+        )
+
+        # Check if the mentor profile is updated
+        updated_mentor = Mentor.objects.get(id=self.mentor.id)
+        self.assertEqual(updated_mentor.first_name, updated_first_name)
+        self.assertEqual(updated_mentor.last_name, updated_last_name)
+        self.assertEqual(updated_mentor.phone, updated_phone)
+        self.assertEqual(updated_mentor.email, updated_email)
+
+        # Check if the response redirects back to the mentor profile page
+        self.assertRedirects(response, reverse("users:mentor_profile"))
