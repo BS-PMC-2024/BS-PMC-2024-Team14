@@ -135,7 +135,6 @@ def student_profile(request):
     if request.method == "POST":
         user_id = request.POST.get("user_id")
         action = request.POST.get("action")
-
         if action == "submit":
             # Handle the update action
             first_name = request.POST.get("first_name")
