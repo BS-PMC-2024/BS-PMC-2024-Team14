@@ -14,7 +14,6 @@ def get_mentor_ids():
         '8901234567',
         '9012345678',
         '0123456789',
-        # Add more fake IDs as needed
     ]
 
 
@@ -67,3 +66,32 @@ class RegisterViewTests(TestCase):
         response = self.client.post(self.register_url, invalid_data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "This field is required.")
+
+
+from django.contrib.auth import get_user_model
+
+class LogoutViewTest(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            email='testuser@example.com',
+            first_name='Test',
+            last_name='User',
+            phone='1234567890',
+            birth_date='2000-01-01',
+            passport_id='A123456789',
+            gender='Male',
+            password='password'
+        )
+
+    def test_logout_view(self):
+        self.client.login(email='testuser@example.com', password='password')
+
+        response = self.client.get(reverse('users:mentor_dashboard'))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(reverse('users:logout'))
+        self.assertEqual(response.status_code, 302) 
+
+        response = self.client.get(reverse('users:mentor_dashboard'))
+        self.assertNotEqual(response.status_code, 200)  
+ 

@@ -12,5 +12,6 @@ urlpatterns = [
     path('admin_dashboard/', admin.site.urls, name='admin_dashboard'),
     path('mentor_dashboard/', views.mentor_dashboard, name='mentor_dashboard'),
     path('student_dashboard/', views.student_dashboard, name='student_dashboard'),
+    path('logout/', views.logout_view,name='logout'),
    
 ]

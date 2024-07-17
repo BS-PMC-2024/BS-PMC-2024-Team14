@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import CustomAuthenticationForm
@@ -108,11 +108,17 @@ def register_view(request):
 
     return render(request, 'register.html', {'form': form})
 
-@login_required
+@login_required(login_url="/users/login")
 def mentor_dashboard(request):
     return render(request, 'mentor_dashboard.html')
 
 
-@login_required
+@login_required(login_url="/users/login")
 def student_dashboard(request):
     return render(request, 'student_dashboard.html')
+
+def logout_view(request):
+    if request.method == "POST":
+        logout(request)
+        return redirect('users:login')
+    return redirect('homepage')
