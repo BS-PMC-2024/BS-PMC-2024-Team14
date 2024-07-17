@@ -1,1 +1,156 @@
 {% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+Sign Up
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Register</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->    
+    <link rel="icon" type="image/png" href={% static "img/icons/favicon.ico" %}/>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href={% static "fonts/font-awesome-4.7.0/css/font-awesome.min.css" %}>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href={% static "css/util.css" %}>
+    <link rel="stylesheet" type="text/css" href={% static "css/style.css" %}>
+    <link rel="stylesheet" type="text/css" href={% static "css/custom.css" %}>
+    <!--===============================================================================================-->
+</head>
+<body>
+    <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins">
+        <div class="wrapper wrapper--w680">
+            <div class="card card-4">
+                <div class="card-body">
+                    <h2 class="title">Sign Up</h2>
+                    <img src={% static "img/logo.png" %} alt="IMG" class="logo">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">First Name</label>
+                                    <input class="input--style-4" type="text" name="first_name" value="{{ form.first_name.value|default_if_none:'' }}">
+                                    {% if form.first_name.errors %}
+                                        <div class="error text-danger">{{ form.first_name.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Last Name</label>
+                                    <input class="input--style-4" type="text" name="last_name" value="{{ form.last_name.value|default_if_none:'' }}">
+                                    {% if form.last_name.errors %}
+                                        <div class="error text-danger">{{ form.last_name.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                        <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">ID</label>
+                                    <input class="input--style-4" type="text" name="passport_id" value="{{ form.passport_id.value|default_if_none:'' }}">
+                                    {% if form.passport_id.errors %}
+                                        <div class="error text-danger">{{ form.passport_id.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Birthday</label>
+                                    <input class="custom-date-picker" type="date" name="birth_date" value="{{ form.birth_date.value|default_if_none:'' }}">
+                                    {% if form.birth_date.errors %}
+                                        <div class="error text-danger">{{ form.birth_date.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Phone</label>
+                                    <input class="input--style-4" type="text" name="phone" value="{{ form.phone.value|default_if_none:'' }}">
+                                    {% if form.phone.errors %}
+                                        <div class="error text-danger">{{ form.phone.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">E-mail</label>
+                                    <input class="input--style-4" type="email" name="email" value="{{ form.email.value|default_if_none:'' }}">
+                                    {% if form.email.errors %}
+                                        <div class="error text-danger">{{ form.email.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Password</label>
+                                    <input class="input--style-4" type="password" name="password">
+                                    {% if form.password.errors %}
+                                        <div class="error text-danger">{{ form.password.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Confirm Password</label>
+                                    <input class="input--style-4" type="password" name="confirm_password">
+                                    {% if form.confirm_password.errors %}
+                                        <div class="error text-danger">{{ form.confirm_password.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space mb-4">
+                            <div class="col-12">
+                                <div class="password-requirments">
+                                    <p>Password must contain at least 8 characters, at least 1 special character : !@#$%^&*</p>
+                                    <p>must contain digits and at least 1 capital letter.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-space">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <label class="label">Gender</label>
+                                    <div class="p-t-10">
+                                        <label class="radio-container m-r-45">Male
+                                            <input type="radio" name="gender" value="Male" {% if form.gender.value == 'Male' %}checked="checked"{% endif %}>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                        <label class="radio-container">Female
+                                            <input type="radio" name="gender" value="Female" {% if form.gender.value == 'Female' %}checked="checked"{% endif %}>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    {% if form.gender.errors %}
+                                        <div class="error " >{{ form.gender.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-t-15">
+                            <button class="sign100-form-btn" type="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src={% static "js/main.js" %}></script>
+</body>
+</html>
+{% endblock %}

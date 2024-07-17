@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.urls import path
+
 from . import views
 
-
-app_name = 'users'
+app_name = "users"
 
 urlpatterns = [
     # path('register/', views.register,name='register'),
@@ -16,6 +16,7 @@ urlpatterns = [
     path('transition_men/', views.transition_men, name='transition_men'),
     path('mentor_studentlist/', views.mentor_studentlist, name='mentor_studentlist'),
     path('student_profile/', views.student_profile, name='student_profile'),
+    path("logout/", views.logout_view, name="logout"),
 
    
 ]
