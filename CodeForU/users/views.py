@@ -41,14 +41,14 @@ def login_view(request):
                 # Check if the user is a mentor
                 try:
                     Mentor.objects.get(user_ptr_id=user.id)
-                    return redirect('users:transition_men')
+                    return redirect("users:transition_men")
                 except Mentor.DoesNotExist:
                     pass
 
                 # Check if the user is a student
                 try:
                     Student.objects.get(user_ptr_id=user.id)
-                    return redirect('users:transition_stu')
+                    return redirect("users:transition_stu")
                 except Student.DoesNotExist:
                     pass
 
@@ -120,28 +120,27 @@ def mentor_dashboard(request):
 
 @login_required(login_url="/users/login")
 def student_dashboard(request):
-    return render(request, 'student_dashboard.html')
+    return render(request, "student_dashboard.html")
+
 
 def transition_stu(request):
-    return render(request, 'transition_stu.html')
+    return render(request, "transition_stu.html")
+
 
 def transition_men(request):
-    return render(request, 'transition_men.html')
+    return render(request, "transition_men.html")
 
 
 @login_required
 def mentor_studentlist(request):
     # Query all students from the database
     students = Student.objects.all()
-    
+
     # Pass the student list to the template context
-    context = {
-        'students': students
-    }
-    
-    return render(request, 'mentor_studentlist.html', context)
-def student_profile(request):
-    return render(request, 'student_profile.html')
+    context = {"students": students}
+
+    return render(request, "mentor_studentlist.html", context)
+
 
 def logout_view(request):
     if request.method == "POST":
@@ -201,3 +200,56 @@ def student_profile(request):
                 print("Something went wrong with getting data from mongo")
 
     return redirect(reverse("users:student_dashboard"))
+
+
+@login_required(login_url="/users/login/")
+def mentor_profile(request):
+    if request.method == "POST":
+        user_id = request.POST.get("user_id")
+        action = request.POST.get("action")
+        if action == "submit":
+            # Handle the update action
+            first_name = request.POST.get("first_name")
+            last_name = request.POST.get("last_name")
+            phone = request.POST.get("phone")
+            email = request.POST.get("email")
+
+            try:
+                mentor = Mentor.objects.get(id=user_id)
+                mentor.first_name = first_name
+                mentor.last_name = last_name
+                mentor.phone = phone
+                mentor.email = email
+                mentor.save()
+                print("Updated successfully")
+                return redirect(
+                    reverse("users:mentor_profile")
+                )  # Redirect to a success page or render a success message
+            except Mentor.DoesNotExist:
+                return HttpResponse("User not found", status=404)
+
+        else:
+            # Handle the delete action
+            try:
+                mentor = Mentor.objects.get(id=user_id)
+                mentor.delete()
+                print(f"{mentor.email} got Deleted successfully")
+                return redirect(
+                    reverse("users:login")
+                )  # Redirect to a success page or render a success message
+            except Mentor.DoesNotExist:
+                return HttpResponse("User not found", status=404)
+    else:
+        if not request.user.is_authenticated:
+            print("User is not authenticated, redirecting to login")
+        else:
+            try:
+                men = Mentor.objects.get(email=request.user.email)
+                print(
+                    f"User {request.user.email} is authenticated, accessing mentor_dashboard"
+                )
+                return render(request, "mentor_profile.html", {"mentor": men})
+            except Mentor.DoesNotExist:
+                print("Something went wrong with getting data from mongo")
+
+    return redirect(reverse("users:mentor_dashboard"))
