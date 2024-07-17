@@ -1,0 +1,79 @@
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transition Page</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        #videoWrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Ensure video is behind content */
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="videoWrapper">
+        <video id="transitionVideo" autoplay muted >
+            <source src={% static  "img/codeforu1.mp4" %} type="video/mp4">
+            הדפדפן שלך לא תומך בתג וידאו.
+        </video>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const video = document.getElementById('transitionVideo');
+
+            if (!video) {
+                console.error('Video element not found!');
+                return;
+            }
+
+            console.log('Video element found, adding event listener...');
+            
+            video.addEventListener('ended', () => {
+                console.log('Video ended, redirecting...');
+                window.location.href = '{% url 'users:student_dashboard' %}'; // Redirect to student dashboard URL
+            });
+
+            video.addEventListener('error', (e) => {
+                console.error('Error occurred while playing the video:', e);
+            });
+
+            window.addEventListener('scroll', () => {
+                if (video.paused) {
+                    video.play();
+                    console.log('Video resumed due to scroll');
+                }
+            });
+
+            console.log('Event listeners added.');
+        });
+    </script>
+</body>
+
+</html>
+
+{% endblock %}

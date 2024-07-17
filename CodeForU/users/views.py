@@ -22,14 +22,14 @@ def login_view(request):
                 # Check if the user is a mentor
                 try:
                     Mentor.objects.get(user_ptr_id=user.id)
-                    return redirect('users:mentor_dashboard')
+                    return redirect('users:transition_men')
                 except Mentor.DoesNotExist:
                     pass
                 
                 # Check if the user is a student
                 try:
                     Student.objects.get(user_ptr_id=user.id)
-                    return redirect('users:student_dashboard')
+                    return redirect('users:transition_stu')
                 except Student.DoesNotExist:
                     pass
                 
@@ -55,3 +55,24 @@ def mentor_dashboard(request):
 @login_required
 def student_dashboard(request):
     return render(request, 'student_dashboard.html')
+
+def transition_stu(request):
+    return render(request, 'transition_stu.html')
+
+def transition_men(request):
+    return render(request, 'transition_men.html')
+
+
+@login_required
+def mentor_studentlist(request):
+    # Query all students from the database
+    students = Student.objects.all()
+    
+    # Pass the student list to the template context
+    context = {
+        'students': students
+    }
+    
+    return render(request, 'mentor_studentlist.html', context)
+def student_profile(request):
+    return render(request, 'student_profile.html')
