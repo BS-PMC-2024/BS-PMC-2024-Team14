@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 
 from .forms import CustomAuthenticationForm
 from .models import Mentor, Student
@@ -50,15 +52,65 @@ def register_view(request):
     return render(request, "register.html")
 
 
-@login_required
+@login_required(login_url="/users/login/")
 def mentor_dashboard(request):
     return render(request, "mentor_dashboard.html")
 
 
-@login_required
+@login_required(login_url="/users/login/")
 def student_dashboard(request):
     return render(request, "student_dashboard.html")
 
 
+@login_required(login_url="/users/login/")
 def student_profile(request):
-    return render(request, "student_profile.html")
+    if request.method == "POST":
+        user_id = request.POST.get("user_id")
+        action = request.POST.get("action")
+
+        if action == "submit":
+            # Handle the update action
+            first_name = request.POST.get("first_name")
+            last_name = request.POST.get("last_name")
+            phone = request.POST.get("phone")
+            email = request.POST.get("email")
+
+            try:
+                student = Student.objects.get(id=user_id)
+                student.first_name = first_name
+                student.last_name = last_name
+                student.phone = phone
+                student.email = email
+                student.save()
+                print("Updated successfully")
+                return redirect(
+                    reverse("users:student_profile")
+                )  # Redirect to a success page or render a success message
+            except Student.DoesNotExist:
+                return HttpResponse("User not found", status=404)
+
+        else:
+            # Handle the delete action
+            try:
+                student = Student.objects.get(id=user_id)
+                student.delete()
+                print(f"{student.email} got Deleted successfully")
+                return redirect(
+                    reverse("users:login")
+                )  # Redirect to a success page or render a success message
+            except Student.DoesNotExist:
+                return HttpResponse("User not found", status=404)
+    else:
+        if not request.user.is_authenticated:
+            print("User is not authenticated, redirecting to login")
+        else:
+            try:
+                st = Student.objects.get(email=request.user.email)
+                print(
+                    f"User {request.user.email} is authenticated, accessing mentor_dashboard"
+                )
+                return render(request, "student_profile.html", {"student": st})
+            except Student.DoesNotExist:
+                print("Something went wrong with getting data from mongo")
+
+    return redirect(reverse("users:student_dashboard"))
