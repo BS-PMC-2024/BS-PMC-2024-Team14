@@ -48,7 +48,7 @@ def login_view(request):
                 # Check if the user is a student
                 try:
                     Student.objects.get(user_ptr_id=user.id)
-                     return redirect('users:transition_stu')
+                    return redirect('users:transition_stu')
                 except Student.DoesNotExist:
                     pass
 
