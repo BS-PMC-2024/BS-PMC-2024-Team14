@@ -13,4 +13,5 @@ urlpatterns = [
     path("mentor_dashboard/", views.mentor_dashboard, name="mentor_dashboard"),
     path("student_dashboard/", views.student_dashboard, name="student_dashboard"),
     path("student_profile/", views.student_profile, name="student_profile"),
+    path("logout/", views.logout_view, name="logout"),
 ]
