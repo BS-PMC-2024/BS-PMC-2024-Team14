@@ -1,42 +1,69 @@
-from django.test import TestCase
-from users.models import Mentor, Student
+from django.test import TestCase, Client
+from django.urls import reverse
+from .models import Mentor, Student
 
-class UserModelTests(TestCase):
+def get_mentor_ids():
+    return [
+        '1234567890',
+        '2345678901',
+        '3456789012',
+        '4567890123',
+        '5678901234',
+        '6789012345',
+        '7890123456',
+        '8901234567',
+        '9012345678',
+        '0123456789',
+        # Add more fake IDs as needed
+    ]
 
-    def test_create_mentor(self):
-        mentor = Mentor.objects.create_user(
-            email="mentor@example.com",
-            first_name="John",
-            last_name="Doe",
-            phone="1234567890",
-            birth_date="1980-01-01",
-            password="securepassword"
-        )
-        mentor.additional_field_mentor = "Expert in Python"
-        mentor.save()
-        
-        self.assertEqual(mentor.email, "mentor@example.com")
-        self.assertEqual(mentor.first_name, "John")
-        self.assertEqual(mentor.last_name, "Doe")
-        self.assertEqual(mentor.phone, "1234567890")
-        self.assertEqual(mentor.additional_field_mentor, "Expert in Python")
-        self.assertTrue(mentor.check_password("securepassword"))
 
-    def test_create_student(self):
-        student = Student.objects.create_user(
-            email="student@example.com",
-            first_name="Jane",
-            last_name="Smith",
-            phone="0987654321",
-            birth_date="2000-05-15",
-            password="securepassword"
-        )
-        student.additional_field_student = "Learning Django"
-        student.save()
-        
-        self.assertEqual(student.email, "student@example.com")
-        self.assertEqual(student.first_name, "Jane")
-        self.assertEqual(student.last_name, "Smith")
-        self.assertEqual(student.phone, "0987654321")
-        self.assertEqual(student.additional_field_student, "Learning Django")
-        self.assertTrue(student.check_password("securepassword"))
+class RegisterViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.register_url = reverse('users:register')
+        self.mentor_ids = get_mentor_ids()
+        self.valid_student_data = {
+            'email': 'student@example.com',
+            'first_name': 'Student',
+            'last_name': 'Example',
+            'birth_date': '2000-01-01',
+            'phone': '1234567890',
+            'gender': 'Male',
+            'passport_id': '1122334455',
+            'password': 'Testpassword1!',
+            'confirm_password': 'Testpassword1!',
+        }
+        self.valid_mentor_data = {
+            'email': 'mentor@example.com',
+            'first_name': 'Mentor',
+            'last_name': 'Example',
+            'birth_date': '1990-01-01',
+            'phone': '0987654321',
+            'gender': 'Female',
+            'passport_id': self.mentor_ids[0],
+            'password': 'Testpassword1!',
+            'confirm_password': 'Testpassword1!',
+        }
+
+    def test_register_student_success(self):
+        response = self.client.post(self.register_url, self.valid_student_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('users:login'))
+        student = Student.objects.get(email=self.valid_student_data['email'])
+        self.assertTrue(student.check_password(self.valid_student_data['password']))
+        self.assertEqual(student.first_name, self.valid_student_data['first_name'])
+        self.assertEqual(student.last_name, self.valid_student_data['last_name'])
+
+    def test_register_password_mismatch(self):
+        invalid_data = self.valid_student_data.copy()
+        invalid_data['confirm_password'] = 'differentpassword'
+        response = self.client.post(self.register_url, invalid_data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_register_missing_fields(self):
+        invalid_data = self.valid_student_data.copy()
+        invalid_data.pop('email')
+        response = self.client.post(self.register_url, invalid_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
