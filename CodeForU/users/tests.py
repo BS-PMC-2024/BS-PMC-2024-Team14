@@ -95,3 +95,72 @@ class LogoutViewTest(TestCase):
 
         response = self.client.get(reverse("users:mentor_dashboard"))
         self.assertNotEqual(response.status_code, 200)
+
+
+class StudentProfileTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+        # Create a student profile for testing
+        self.student = Student.objects.create(
+            email="testuser@example.com",
+            first_name="John",
+            last_name="Doe",
+            birth_date="1990-01-01",
+            phone="1234567890",
+            passport_id="ABCDE12345",  # Ensure this is unique for each test run
+            gender="Male",
+            level=0,
+        )
+
+        # Log the student in using force_login
+        self.user = self.student.user_ptr  # Assuming Student inherits from User
+        self.client.force_login(self.user)
+
+    def test_delete_student_profile(self):
+        # Ensure student profile exists
+        self.assertTrue(Student.objects.filter(email=self.student.email).exists())
+
+        # Make a POST request to delete the student profile
+        response = self.client.post(
+            reverse("users:student_profile"),
+            {"user_id": self.student.id, "action": "delete"},
+        )
+
+        # Check if the student profile is deleted
+        self.assertFalse(Student.objects.filter(email=self.student.email).exists())
+
+        # Check if the response redirects to the login page
+        self.assertRedirects(response, reverse("users:login"))
+
+    def test_edit_student_profile(self):
+        # Ensure student profile exists
+        self.assertTrue(Student.objects.filter(email=self.student.email).exists())
+
+        # Make a POST request to edit the student profile
+        updated_first_name = "Jane"
+        updated_last_name = "Doe"
+        updated_phone = "9876543210"
+        updated_email = "updated_email@example.com"
+
+        response = self.client.post(
+            reverse("users:student_profile"),
+            {
+                "user_id": self.student.id,
+                "action": "submit",
+                "first_name": updated_first_name,
+                "last_name": updated_last_name,
+                "phone": updated_phone,
+                "email": updated_email,
+            },
+        )
+
+        # Check if the student profile is updated
+        updated_student = Student.objects.get(id=self.student.id)
+        self.assertEqual(updated_student.first_name, updated_first_name)
+        self.assertEqual(updated_student.last_name, updated_last_name)
+        self.assertEqual(updated_student.phone, updated_phone)
+        self.assertEqual(updated_student.email, updated_email)
+
+        # Check if the response redirects back to the student profile page
+        self.assertRedirects(response, reverse("users:student_profile"))
