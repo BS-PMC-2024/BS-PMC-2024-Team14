@@ -41,14 +41,14 @@ def login_view(request):
                 # Check if the user is a mentor
                 try:
                     Mentor.objects.get(user_ptr_id=user.id)
-                     return redirect('users:transition_men')
+                    return redirect('users:transition_men')
                 except Mentor.DoesNotExist:
                     pass
 
                 # Check if the user is a student
                 try:
                     Student.objects.get(user_ptr_id=user.id)
-                    return redirect('users:transition_stu')
+                     return redirect('users:transition_stu')
                 except Student.DoesNotExist:
                     pass
 
