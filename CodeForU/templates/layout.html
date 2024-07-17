@@ -12,70 +12,153 @@
     <!-- Favicon -->
     <link href={%static "img/favicon.ico" %} rel="icon">
 
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Icon Font Stylesheet -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Libraries Stylesheet -->
-    <link href={% static "lib/animate/animate.min.css" %} rel="stylesheet">
-    <link href={% static "lib/owlcarousel/assets/owl.carousel.min.css" %} rel="stylesheet">
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href={% static "css/bootstrap.min.css" %} rel="stylesheet">
 
-    <!-- Template Stylesheet -->
-    <link href={% static "css/style.css" %}rel="stylesheet">
-    <link href={% static "css/animate.css" %} rel="stylesheet">
+
+
+<!-- Site favicon -->
+<link rel="apple-touch-icon" sizes="180x180" href={% static "vendors/images/apple-touch-icon.png" %}>
+<link rel="icon" type="image/png" sizes="32x32" href={% static "vendors/images/favicon-32x32.png"%}>
+<link rel="icon" type="image/png" sizes="16x16" href={% static "vendors/images/favicon-16x16.png"%}>
+
+<!-- Mobile Specific Metas -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<!-- Google Font -->
+<link href={% static "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" %}rel="stylesheet">
+<!-- CSS -->
+<link rel="stylesheet" type="text/css" href={% static "vendors/styles/core.css"%}>
+<link rel="stylesheet" type="text/css" href={% static "vendors/styles/icon-font.min.css"%}>
+<!-- Slick Slider css -->
+<link rel="stylesheet" type="text/css" href={% static "src/plugins/slick/slick.css"%}>
+<!-- bootstrap-touchspin css -->
+<link rel="stylesheet" type="text/css" href={% static "src/plugins/bootstrap-touchspin/jquery.bootstrap-touchspin.css"%}>
+<link rel="stylesheet" type="text/css" href={% static "vendors/styles/style.css"%}>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src={% static "https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"%}></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-119386393-1');
+</script>
+
    
-    {% load bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-    <a href="/" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-        <h2 class="m-0 text-primary">
-            <img src={%static "img/logo.png" %} alt="Description of Image" style="height: 70px;">
-        </h2>
-     </a>
-    <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-        <div class="navbar-nav ms-auto p-4 p-lg-0">
-            <a href="/" class="nav-item nav-link active">Home</a>
-            <a href="#" class="nav-item nav-link">About</a>
-            <a href="#" class="nav-item nav-link">Courses</a>
-            <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                <div class="dropdown-menu fade-down m-0">
-                    <a href="#" class="dropdown-item">Our Team</a>
-                    <a href="#" class="dropdown-item">Testimonial</a>
-                    <a href="#" class="dropdown-item">404 Page</a>
-                </div>
-            </div>
-            <a href="#" class="nav-item nav-link">Contact</a>
-        </div>
-        {% if user.is_authenticated %}  
-        <form action="{% url 'users:logout' %}" method="post">
-            {% csrf_token %}
-            <button class="btn custom-font btn-primary py-4 px-lg-5 d-none d-lg-block" title = "User Logout">Logout<i class="bi bi-box-arrow-in-right"></i></button> 
-       
-            
-        </form>
-        {% else  %}
-        <a href="{% url 'users:login' %}" class="btn custom-font btn-primary py-4 px-lg-5 d-none d-lg-block">Login<i class="fa fa-arrow-right ms-3"></i></a> 
-        
-        {% endif %}
-    </div>
-</nav>
-    <main>
+
+
+
+
+	<div class="header" style="background:none; box-shadow:none; width:100%; justify-content: space-between;">
+	
+		<div class= "header-left">
+				<a href="/" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+			<h2 class="m-0 text-primary">
+				<img src={%static "img/logo.png" %} alt="Description of Image" style="height: 70px;">
+			</h2>
+		 </a>
+		</div>
+
+		<div class= "header-right" >
+			<div class="user-notification" >
+				<div class="dropdown" >
+					<a class="dropdown-toggle no-arrow" href="#" role="button" data-toggle="dropdown" >
+						<i class="icon-copy dw dw-notification" style="color:white;"></i>
+						<span class="badge notification-active" ></span>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right">
+						<div class="notification-list mx-h-350 customscroll">
+							<ul>
+								<li>
+									<a href="#">
+										<img src={% static "vendors/images/img.jpg"%} alt="">
+										<h3>John Doe</h3>
+										<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed...</p>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<img src={% static "vendors/images/photo1.jpg"%} alt="">
+										<h3>Lea R. Frith</h3>
+										<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed...</p>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<img src={% static "vendors/images/photo2.jpg"%} alt="">
+										<h3>Erik L. Richards</h3>
+										<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed...</p>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<img src={% static "vendors/images/photo3.jpg"%} alt="">
+										<h3>John Doe</h3>
+										<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed...</p>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<img src={% static "vendors/images/photo4.jpg"%} alt="">
+										<h3>Renee I. Hansen</h3>
+										<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed...</p>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<img src={% static "vendors/images/img.jpg"%} alt="">
+										<h3>Vicki M. Coleman</h3>
+										<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed...</p>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="user-info-dropdown">
+				<div class="dropdown">
+					<a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+						<span class="user-icon">
+							<img src={%static "img/USER2.png"%} alt="">
+						</span>
+						<span class="user-name">Ross C. Lopez</span>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+						<a class="dropdown-item" href="profile.html"><i class="dw dw-user1"></i> Profile</a>
+						<a class="dropdown-item" href="profile.html"><i class="dw dw-settings2"></i> Setting</a>
+						<a class="dropdown-item" href="faq.html"><i class="dw dw-help"></i> Help</a>
+						<a class="dropdown-item" href="login.html"><i class="dw dw-logout"></i> Log Out</a>
+					</div>
+				</div>
+			</div>
+		</div>
+			
+		
+	
+	</div>
+
+
+
+
+
+
+
+   <main >
         {% block content %}
         {% endblock %}
     </main>
 </body>
 </html>
+
+
+   
