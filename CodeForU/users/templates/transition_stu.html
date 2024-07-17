@@ -55,7 +55,7 @@
             
             video.addEventListener('ended', () => {
                 console.log('Video ended, redirecting...');
-                window.location.href = '{% url 'users:student_dashboard' %}'; // Redirect to student dashboard URL
+                window.location.href = "{% url 'users:student_dashboard' %}"; // Redirect to student dashboard URL
             });
 
             video.addEventListener('error', (e) => {

@@ -55,7 +55,7 @@
             
             video.addEventListener('ended', () => {
                 console.log('Video ended, redirecting...');
-                window.location.href = 'index.html'; // Replace with your desired URL
+                window.location.href = "{% url 'users:mentor_dashboard'%}"; // Replace with your desired URL
             });
 
             video.addEventListener('error', (e) => {
