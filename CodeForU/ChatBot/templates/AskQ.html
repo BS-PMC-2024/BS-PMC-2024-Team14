@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+Chat with GPT
+{% endblock %}
+
+{% block content %}
+<div class="chat-limiter">
+    <div class="chat-container">
+        <div class="chat-messages" id="chat-messages">
+            {% if conversation %}
+                {% for message in conversation %}
+                    <div class="chat-message {% if message.role == 'user' %}chat-user{% else %}chat-assistant{% endif %}">
+                        {% if message.content|slice:":3" == '```' and message.content|slice:"-3:" == '```' %}
+                            <div class="code-container">
+                                <pre><code class="language-python">{{ message.content|slice:"3:-3" }}</code></pre>
+                            </div>
+                        {% else %}
+                            {{ message.content }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="chat-welcome-message">Start your conversation!</div>
+            {% endif %}
+        </div>
+        <form method="post" action="{% url 'chat_page' %}" class="chat-form">
+            {% csrf_token %}
+            <div class="input-group mb-3 d-flex align-items-center">
+                <input type="text" class="form-control" id="message" name="message" placeholder="Type your message here..." required>
+                <button class="btn btn-primary" type="submit">
+                    <i class="fa fa-paper-plane"></i>
+                </button>
+                <!-- Command Button -->
+                <button class="btn btn-custom info-button ms-2" type="button" data-bs-toggle="modal" data-bs-target="#commandsModal">
+                    <i class="fa fa-list"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Commands Modal -->
+<div class="modal fade" id="commandsModal" tabindex="-1" aria-labelledby="commandsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="commandsModalLabel">Possible Commands</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>To get Code Snippets use: write code or write some code</li>
+                    <li>Clear chat (clears the chat)</li>
+                    
+                    <!-- Add more commands as needed -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'path/to/bootstrap.bundle.min.js' %}"></script>
+{% endblock %}
