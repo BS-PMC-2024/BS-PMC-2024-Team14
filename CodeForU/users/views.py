@@ -286,3 +286,11 @@ def delete_help_request(request, request_id):
         help_request.delete()
         return redirect(reverse("users:submit_help_request"))
     return render(request, "submit_help_request.html")
+
+
+def mentor_add_question(request):
+    return render(request, "mentor_add_question.html")
+
+def student_que(request):
+    return render(request, "student_que.html")
+
