@@ -2,9 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 
 from .decorators import mentor_required
 from .forms import CustomAuthenticationForm, HelpRequestForm, UserRegistrationForm
@@ -280,7 +279,9 @@ def submit_help_request(request):
 
 @mentor_required
 def delete_help_request(request, request_id):
-    help_request = get_object_or_404(HelpRequest, id=request_id, user=request.user)
+    print("dasdasfasd")
+    help_request = HelpRequest.objects.get(id=request_id)
+    print(help_request)
     if request.method == "POST":
         help_request.delete()
         return redirect(reverse("users:submit_help_request"))
