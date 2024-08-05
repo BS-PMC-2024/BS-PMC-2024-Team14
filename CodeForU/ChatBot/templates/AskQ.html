@@ -7,7 +7,7 @@ Chat with GPT
 
 {% block content %}
 <div class="chat-limiter">
-    <div class="chat-container">
+    <div class="chat-container" style="margin-top: 20px;">
         <div class="chat-messages" id="chat-messages">
             {% if conversation %}
                 {% for message in conversation %}
@@ -18,6 +18,13 @@ Chat with GPT
                             </div>
                         {% else %}
                             {{ message.content }}
+                        {% endif %}
+                        {% if message.role == 'assistant' %}
+                            <form method="post" action="{% url 'save_question' %}" class="save-question-form" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="question_text" value="{{ message.content }}">
+                                <button type="submit" class="btn btn-link">Save Question</button>
+                            </form>
                         {% endif %}
                     </div>
                 {% endfor %}
@@ -33,7 +40,7 @@ Chat with GPT
                     <i class="fa fa-paper-plane"></i>
                 </button>
                 <!-- Command Button -->
-                <button class="btn btn-custom info-button ms-2" type="button" data-bs-toggle="modal" data-bs-target="#commandsModal">
+                <button class="btn btn-custom info-button ms" type="button" data-bs-toggle="modal" data-bs-target="#commandsModal">
                     <i class="fa fa-list"></i>
                 </button>
             </div>

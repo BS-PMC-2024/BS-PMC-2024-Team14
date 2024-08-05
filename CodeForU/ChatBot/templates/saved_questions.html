@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <h1>Saved Questions</h1>
+    <ul>
+        {% for question in saved_questions %}
+            <li>{{ question.question_text }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

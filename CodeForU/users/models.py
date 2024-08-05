@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from ChatBot.models import Question 
 
 class UserManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, phone, birth_date,passport_id,gender, password=None):
@@ -49,6 +50,7 @@ class User(AbstractUser):
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     gender = models.CharField(max_length=10, verbose_name="Gender", choices=[('Male', 'Male'), ('Female', 'Female')], default='Male')
+    saved_questions = models.ManyToManyField(Question, related_name='saved_by', blank=True)  # Reference the Question model
 
 
     USERNAME_FIELD = "email"
@@ -67,23 +69,28 @@ class User(AbstractUser):
     def has_perm(self, perm, obj=None):
         return True
 
+    # def is_mentor(self):
+    #     try:
+    #         is_mentor = Mentor.objects.filter(user_ptr_id=self.id).exists()
+    #         print(f"Checking if user {self.email} is a mentor: {is_mentor}")
+    #         return is_mentor
+    #     except Exception as e:
+    #         print(f"Error checking if user {self.email} is a mentor: {e}")
+    #         return False
+
+    # def is_student(self):
+    #     try:
+    #         is_student = Student.objects.filter(user_ptr_id=self.id).exists()
+    #         print(f"Checking if user {self.email} is a student: {is_student}")
+    #         return is_student
+    #     except Exception as e:
+    #         print(f"Error checking if user {self.email} is a student: {e}")
+    #         return False
     def is_mentor(self):
-        try:
-            is_mentor = Mentor.objects.filter(user_ptr_id=self.id).exists()
-            print(f"Checking if user {self.email} is a mentor: {is_mentor}")
-            return is_mentor
-        except Exception as e:
-            print(f"Error checking if user {self.email} is a mentor: {e}")
-            return False
+        return Mentor.objects.filter(id=self.id).exists()
 
     def is_student(self):
-        try:
-            is_student = Student.objects.filter(user_ptr_id=self.id).exists()
-            print(f"Checking if user {self.email} is a student: {is_student}")
-            return is_student
-        except Exception as e:
-            print(f"Error checking if user {self.email} is a student: {e}")
-            return False
+        return Student.objects.filter(id=self.id).exists()
 
 class Student(User):
     level = models.IntegerField(verbose_name="Student Level", blank=True, null=True, default=0)
