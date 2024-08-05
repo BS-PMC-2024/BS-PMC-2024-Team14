@@ -1,19 +1,24 @@
-#from django.test import TestCase
-#import unittest
+from django.test import TestCase
+import unittest
 
-# Import the test cases from the users app
-#from users.tests import UserModelTests
+# Import the test cases from the users and ChatBot apps
+from users.tests import RegisterViewTests, LogoutViewTest, StudentProfileTests, MentorProfileTests
+from ChatBot.tests import QuestionModelTests
 
-# Create a test suite that includes the user tests
-#def suite():
-#    suite = unittest.TestSuite()
-#    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(UserModelTests))
-#    return suite
+# Create a test suite that includes the user and ChatBot tests
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(RegisterViewTests))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(LogoutViewTest))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(StudentProfileTests))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(MentorProfileTests))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(QuestionModelTests))
+    return suite
 
 # Create a test case to run the suite
-#class MainAppTestSuite(TestCase):
+class MainAppTestSuite(TestCase):
 
-#    def test_users_app(self):
-#        runner = unittest.TextTestRunner()
-#        result = runner.run(suite())
-#       self.assertEqual(result.wasSuccessful(), True)
+    def test_all_apps(self):
+        runner = unittest.TextTestRunner()
+        result = runner.run(suite())
+        self.assertTrue(result.wasSuccessful())
