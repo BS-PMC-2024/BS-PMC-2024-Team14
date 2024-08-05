@@ -2,8 +2,10 @@
 
 from django.shortcuts import render
 
+
 def homepage(request):
     #return HttpResponse("Hello World! I'm Home.")
-    return render(request,'homepage.html')
+    user_profile = request.user if request.user.is_authenticated else None
+    return render(request,'homepage.html',{"user_profile":user_profile})
 
 

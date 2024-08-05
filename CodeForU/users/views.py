@@ -2,11 +2,13 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
-from .forms import CustomAuthenticationForm, UserRegistrationForm
-from .models import Mentor, Student
+from .decorators import mentor_required
+from .forms import CustomAuthenticationForm, HelpRequestForm, UserRegistrationForm
+from .models import HelpRequest, Mentor, Student
 
 
 def get_mentor_ids():
@@ -72,8 +74,10 @@ def register_view(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.set_password(form.cleaned_data["password"])
-            
-            if user.passport_id in mentor_ids:  # Check if passport ID is in the list of mentor IDs
+
+            if (
+                user.passport_id in mentor_ids
+            ):  # Check if passport ID is in the list of mentor IDs
                 mentor = Mentor.objects.create(
                     email=user.email,
                     first_name=user.first_name,
@@ -82,12 +86,11 @@ def register_view(request):
                     phone=user.phone,
                     gender=user.gender,
                     passport_id=user.passport_id,
-                   
                 )
-                mentor.set_password(form.cleaned_data['password'])
+                mentor.set_password(form.cleaned_data["password"])
                 mentor.save()
             else:
-            
+
                 student = Student.objects.create(
                     email=user.email,
                     first_name=user.first_name,
@@ -137,11 +140,9 @@ def mentor_studentlist(request):
     students = Student.objects.all()
 
     # Pass the student list to the template context
-    context = {
-        'students': students
-    }
-    
-    return render(request, 'mentor_studentlist.html', context)
+    context = {"students": students}
+
+    return render(request, "mentor_studentlist.html", context)
 
 
 def logout_view(request):
@@ -255,3 +256,32 @@ def mentor_profile(request):
                 print("Something went wrong with getting data from mongo")
 
     return redirect(reverse("users:mentor_dashboard"))
+
+
+@mentor_required
+def submit_help_request(request):
+    help_requests = None
+    if request.method == "POST":
+        form = HelpRequestForm(request.POST)
+        if form.is_valid():
+            mentor_id = request.user.id
+            help_request = form.save(commit=False)
+            help_request.user = mentor_id
+            help_request.save()
+            return redirect(reverse("users:submit_help_request"))
+    else:
+        mentor_id = request.user.id
+        help_requests = HelpRequest.objects.filter(user=mentor_id)
+        form = HelpRequestForm()
+    return render(
+        request, "submit_help_request.html", {"form": form, "requests": help_requests}
+    )
+
+
+@mentor_required
+def delete_help_request(request, request_id):
+    help_request = get_object_or_404(HelpRequest, id=request_id, user=request.user)
+    if request.method == "POST":
+        help_request.delete()
+        return redirect(reverse("users:submit_help_request"))
+    return render(request, "submit_help_request.html")
