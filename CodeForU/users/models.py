@@ -1,3 +1,4 @@
+from ChatBot.models import Question
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
@@ -74,12 +75,8 @@ class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    gender = models.CharField(
-        max_length=10,
-        verbose_name="Gender",
-        choices=[("Male", "Male"), ("Female", "Female")],
-        default="Male",
-    )
+    gender = models.CharField(max_length=10, verbose_name="Gender", choices=[('Male', 'Male'), ('Female', 'Female')], default='Male')
+    saved_questions = models.ManyToManyField(Question, related_name='saved_by', blank=True)  # Reference the Question model
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
@@ -103,7 +100,7 @@ class User(AbstractUser):
 
     def has_perm(self, perm, obj=None):
         return True
-    
+
     @property
     def is_mentor(self):
         try:

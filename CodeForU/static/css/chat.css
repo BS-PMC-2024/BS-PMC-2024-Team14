@@ -1,0 +1,144 @@
+/* Custom styles for the chat page */
+
+/* Background and container styles */
+.chat-limiter {
+    width: 100%;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f2f2f2; /* Light background color */
+    background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: linear-gradient(-135deg, #c850c0, #4158d0);
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 800px;
+    height: 100vh;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between messages */
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.chat-message {
+    padding: 10px;
+    border-radius: 20px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.chat-message.chat-user {
+    background: #007bff;
+    color: white;
+    align-self: flex-end;
+}
+
+.chat-message.chat-assistant {
+    background: #e9ecef;
+    color: black;
+    align-self: flex-start;
+}
+
+.chat-welcome-message {
+    text-align: center;
+    color: #6c757d;
+}
+
+.chat-form {
+    background: #f9f9f9;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    position: sticky;
+    bottom: 0;
+}
+
+.input-group {
+    display: flex;
+    width: 100%;
+}
+
+.input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    height: 50px;
+    font-size: 16px;
+    padding: 10px;
+}
+
+.input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    background: #007bff;
+    color: white;
+    height: 50px;
+    font-size: 20px;
+}
+
+
+
+
+/* Container for code snippets */
+/* Container for code snippets */
+.code-container {
+    background: #f5f5f5; /* Light background color for the code block */
+    border: 1px solid #ddd; /* Border to separate code from the rest of the content */
+    border-radius: 5px; /* Rounded corners for the container */
+    padding: 10px; /* Padding inside the container */
+    margin-top: 10px; /* Margin around the container */
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+}
+
+/* Style for the pre element to avoid margin */
+pre {
+    margin: 0; /* Remove default margin */
+    white-space: pre-wrap; /* Wrap code lines if necessary */
+    overflow: auto; /* Add scrollbar if content overflows */
+}
+
+/* Style for the code element */
+/* code {
+    display: block;
+    font-family: monospace;
+    color: #d73a49; /* Example color for code */
+
+
+    /* Custom styles for buttons */
+.btn-custom {
+    background-color: #007bff; /* Adjust as needed */
+    color: #fff;
+    border: none; /* Remove border if needed */
+    padding: 10px 20px; /* Adjust padding */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+}
+
+.btn-custom:hover {
+    background-color: #0056b3; /* Adjust hover color */
+    color: #fff; /* Ensure text color on hover */
+}
+
+/* Custom styles for the info button */
+.info-button {
+    font-size: 16px; /* Font size for info button */
+}
+
+
+
+

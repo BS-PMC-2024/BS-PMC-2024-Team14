@@ -10,6 +10,14 @@
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- PrismJS CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+      rel="stylesheet"
+    />
+    <!-- PrismJS JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap"
@@ -35,8 +43,9 @@
 
     <!-- Template Stylesheet -->
     <link href={% static "css/style.css" %}rel="stylesheet"> <link href={%
-    static "css/animate.css" %} rel="stylesheet"> {% load bootstrap5 %}
-    {%bootstrap_css %} {% bootstrap_javascript %}
+    static "css/animate.css" %} rel="stylesheet"> <link href={% static
+    "css/chat.css" %} rel="stylesheet"> {% load bootstrap5 %} {% bootstrap_css
+    %} {% bootstrap_javascript %}
   </head>
   <body>
     <nav
