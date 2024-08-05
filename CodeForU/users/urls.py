@@ -18,4 +18,10 @@ urlpatterns = [
     path("student_profile/", views.student_profile, name="student_profile"),
     path("mentor_profile/", views.mentor_profile, name="mentor_profile"),
     path("logout/", views.logout_view, name="logout"),
+    path("submit-help-request/", views.submit_help_request, name="submit_help_request"),
+    path(
+        "delete-help-request/<int:request_id>/",
+        views.delete_help_request,
+        name="delete_help_request",
+    ),
 ]

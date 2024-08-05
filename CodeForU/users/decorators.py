@@ -1,8 +1,11 @@
 # users/decorators.py
 
-from django.http import HttpResponseForbidden
 from functools import wraps
+
+from django.http import HttpResponseForbidden
+
 from .models import Mentor
+
 
 def mentor_required(view_func):
     @wraps(view_func)

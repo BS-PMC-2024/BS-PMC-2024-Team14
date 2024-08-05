@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from .models import Mentor, Student
+from .models import HelpRequest, Mentor, Student
 
 
 def get_mentor_ids():
@@ -232,3 +232,96 @@ class MentorProfileTests(TestCase):
 
         # Check if the response redirects back to the mentor profile page
         self.assertRedirects(response, reverse("users:mentor_profile"))
+
+
+class HelpRequestAndViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Create a mentor user
+        self.mentor = Mentor.objects.create(
+            email="mentor@example.com",
+            first_name="John",
+            last_name="Doe",
+            birth_date="1990-01-01",
+            phone="1234567890",
+            passport_id="A12345678",
+            is_approved=True
+        )
+        self.client.force_login(self.mentor)
+        self.url = reverse("users:submit_help_request")
+
+    # --- Model Tests ---
+    def test_help_request_str(self):
+        help_request = HelpRequest.objects.create(
+            user=self.mentor.id,
+            subject="Test Subject",
+            message="Test Message"
+        )
+        self.assertEqual(str(help_request), f"Request from - {self.mentor.email} {help_request.subject}")
+
+    def test_help_request_save_responded_at(self):
+        help_request = HelpRequest.objects.create(
+            user=self.mentor.id,
+            subject="Test Subject",
+            message="Test Message",
+            is_resolved=True
+        )
+        help_request.save()
+        self.assertIsNotNone(help_request.responded_at)
+
+    def test_help_request_clean(self):
+        help_request = HelpRequest(
+            user=self.mentor.id,
+            subject="Test Subject",
+            message="Test Message",
+            is_resolved=True
+        )
+        with self.assertRaises(Exception):
+            help_request.clean()
+    
+    def test_help_request_valid_clean(self):
+        help_request = HelpRequest(
+            user=self.mentor.id,
+            subject="Test Subject",
+            message="Test Message",
+            response="Test Response",
+            is_resolved=True
+        )
+        try:
+            help_request.clean()  # Should not raise an exception
+        except Exception as e:
+            self.fail(f"clean() raised Exception unexpectedly: {e}")
+
+    # --- View Tests ---
+    def test_get_request(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "submit_help_request.html")
+        self.assertContains(response, "<form")  # Ensure the form is in the response
+
+    def test_post_request_valid_form(self):
+        response = self.client.post(self.url, {
+            "subject": "Test Subject",
+            "message": "Test Message",
+        })
+        self.assertEqual(response.status_code, 302)  # Redirect status code
+        self.assertTrue(HelpRequest.objects.filter(user=self.mentor.id).exists())
+
+    def test_post_request_invalid_form(self):
+        response = self.client.post(self.url, {
+            "subject": "",
+            "message": "",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', 'subject', 'This field is required.')
+        self.assertFormError(response, 'form', 'message', 'This field is required.')
+
+    def test_help_request_display(self):
+        HelpRequest.objects.create(
+            user=self.mentor.id,
+            subject="Test Subject",
+            message="Test Message"
+        )
+        response = self.client.get(self.url)
+        self.assertContains(response, "Test Subject")
+        self.assertContains(response, "Test Message")
