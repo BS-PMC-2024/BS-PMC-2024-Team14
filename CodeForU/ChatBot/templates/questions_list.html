@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <h1>All Questions</h1>
+    <ul>
+        {% for question in questions %}
+            <li>
+                {{ question.question_text }}
+                <form method="post" action="{% url 'save_question_for_student' question.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link">Save</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
