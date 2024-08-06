@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from .models import User
 
 from .decorators import mentor_required, student_required
 from .forms import (
@@ -32,7 +33,6 @@ def get_mentor_ids():
         # Add more fake IDs as needed
     ]
 
-
 def login_view(request):
     if request.method == "POST":
         form = CustomAuthenticationForm(request, data=request.POST)
@@ -48,7 +48,11 @@ def login_view(request):
 
                 # Check if the user is a mentor
                 try:
-                    Mentor.objects.get(user_ptr_id=user.id)
+                    mentor = Mentor.objects.get(user_ptr_id=user.id)
+                    if not mentor.is_approved:
+                        messages.error(request, "Your account is not approved yet.")
+                        return redirect("users:login")  
+                    messages.success(request,"")
                     return redirect("users:transition_men")
                 except Mentor.DoesNotExist:
                     pass
@@ -63,14 +67,28 @@ def login_view(request):
                 # If user is neither a mentor nor a student
                 messages.error(request, "Invalid role")
             else:
-                messages.error(request, "Invalid email or password")
+                # Authentication failed, check if the email exists
+                if not User.objects.filter(email=email).exists():
+                    messages.error(request, "Email does not exist.")
+                else:
+                    messages.error(request, "Password does not match the email.")
         else:
-            print("Form is not valid:", form.errors)
+            email = form.cleaned_data.get("username")
+            curr_user = None
+            try:
+                curr_user =  User.objects.get(email=email) 
+            except Exception:
+                curr_user = None
+            if not curr_user:
+                    messages.error(request, "Email does not exist.")
+            else:
+                    messages.error(request, "Password does not match the email.")
+            # messages.error(request,form.errors)
+            # print("Form is not valid:", )
     else:
         form = CustomAuthenticationForm()
 
     return render(request, "login.html", {"form": form})
-
 
 def register_view(request):
     mentor_ids = get_mentor_ids()  # Assuming you have a function to get mentor IDs
