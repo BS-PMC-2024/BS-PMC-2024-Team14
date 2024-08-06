@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from .models import HelpRequest, Mentor, Student
+from .models import HelpRequest, Mentor, Student, User, Question
 
 
 def get_mentor_ids():
@@ -325,3 +325,88 @@ class HelpRequestAndViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertContains(response, "Test Subject")
         self.assertContains(response, "Test Message")
+
+
+User = get_user_model()
+
+class QuestionsListViewTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+        # Create test users
+        self.student_user = User.objects.create_user(
+            email='student@example.com',
+            first_name='Student',
+            last_name='User',
+            phone='1234567890',
+            birth_date='2000-01-01',
+            passport_id='123456789',
+            gender='Male',
+            password='password123'
+        )
+        self.student = Student.objects.create(
+            id=self.student_user.id,
+            email=self.student_user.email,
+            first_name=self.student_user.first_name,
+            last_name=self.student_user.last_name,
+            phone=self.student_user.phone,
+            birth_date=self.student_user.birth_date,
+            passport_id=self.student_user.passport_id,
+            gender=self.student_user.gender,
+            level=5
+        )
+
+        self.mentor_user = User.objects.create_user(
+            email='mentor@example.com',
+            first_name='Mentor',
+            last_name='User',
+            phone='1234567890',
+            birth_date='1985-01-01',
+            passport_id='987654321',
+            gender='Female',
+            password='password123'
+        )
+
+        # Create test questions
+        self.question1 = Question.objects.create(
+            user=self.student_user.id,
+            question_text='What is the capital of France?',
+            level=1
+        )
+        self.question2 = Question.objects.create(
+            user=self.mentor_user.id,
+            question_text='What is the capital of Germany?',
+            level=2
+        )
+
+    def test_questions_list_requires_login(self):
+        response = self.client.get(reverse('users:questions_list'))
+        self.assertRedirects(response, '/users/login/?next=/users/questions_list/')
+
+
+    def test_questions_list_as_mentor(self):
+        self.client.login(email='mentor@example.com', password='password123')
+        response = self.client.get(reverse('users:questions_list'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'questions_list.html')
+        self.assertContains(response, 'What is the capital of France?')
+        self.assertContains(response, 'What is the capital of Germany?')
+        self.assertIsNone(response.context['user_level'])
+
+    def test_question_creation(self):
+        question = Question.objects.create(
+            user=self.student_user.id,
+            question_text='What is the capital of Spain?',
+            level=3
+        )
+        self.assertEqual(question.user, self.student_user.id)
+        self.assertEqual(question.question_text, 'What is the capital of Spain?')
+        self.assertEqual(question.level, 3)
+        self.assertIsNotNone(question.created_at)
+
+    def tearDown(self):
+        User.objects.all().delete()
+        Question.objects.all().delete()
+        Student.objects.all().delete()

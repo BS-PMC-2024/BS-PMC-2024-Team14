@@ -24,6 +24,6 @@ urlpatterns = [
         views.delete_help_request,
         name="delete_help_request",
     ),
-    path("student_que/", views.student_que, name="student_que"),
-    path("mentor_profile/", views.mentor_profile, name="mentor_profile"),
+    path("questions_list/", views.questions_list, name="questions_list"),
+    path('questions/<int:question_id>/answer/', views.answer_question, name='answer_question'),
 ]
