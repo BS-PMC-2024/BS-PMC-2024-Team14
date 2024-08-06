@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %} CodeForU {% endblock %}</title>
     <!-- Favicon -->
-    <link href={%static "img/favicon.ico" %} rel="icon">
+    <link href={% static "img/favicon.ico" %} rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -46,6 +46,79 @@
     <link href={% static "css/animate.css" %} rel="stylesheet"/> 
     <link href={% static "css/chat.css" %} rel="stylesheet"/> 
     {% load bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %}
+    
+<style>
+    .number-btn {
+        background-color: lightgray;
+        color: black;
+        border: 1px solid #ccc;
+        margin-right: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .number-btn.active {
+        background-color: green;
+        color: white;
+    }
+
+    .number-btn:hover {
+        background-color: darkgray;
+    }
+
+    .unique-btn {
+        display: inline-flex;
+        align-items: center;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 5px 10px;
+        text-decoration: none;
+    }
+
+    .unique-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .unique-icon {
+        margin-left: 5px;
+        border-radius: 3px;
+        padding: 3px;
+        transition: background-color 0.3s;
+        font-size: 1em;
+        line-height: 1;
+    }
+
+    .question-container {
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    .question-container:hover {
+        background-color: #e0e0e0;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .task-type {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    p {
+        margin-top: 10px;
+    }
+</style>
+
+
   </head>
   <body>
     <nav
@@ -53,7 +126,7 @@
     >
       <a href="/" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
         <h2 class="m-0 text-primary">
-          <img src={%static "img/logo.png" %} alt="Description of Image"
+          <img src={% static "img/logo.png" %} alt="Description of Image"
           style="height: 70px;">
         </h2>
       </a>
@@ -70,10 +143,10 @@
           <a href="/" class="nav-item nav-link active">Home</a>
           <a href="#" class="nav-item nav-link">About</a>
           <a href="#" class="nav-item nav-link">Courses</a>
+          <a href="{% url 'users:questions_list' %}" class="nav-item nav-link">Questions</a>
           {% if user.is_mentor %}
-          <a href="/users/submit-help-request" class="nav-item nav-link"
-            >Requests</a
-          >
+          <a href="/chat/" class="nav-item nav-link">Add Question</a>
+          <a href="/users/submit-help-request" class="nav-item nav-link">Requests</a>
           {% endif %}
           <div class="nav-item dropdown">
             <a

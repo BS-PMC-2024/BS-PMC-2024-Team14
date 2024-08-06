@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+Add Questions
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10">
+        <div class="min-height-200px">
+            <div class="row">
+                <div class="col-sm-12 mb-30">
+                    <div class="card-box height-100-p overflow-hidden">
+                        <div class="profile-tab height-100-p">
+                            <div class="tab height-100-p">
+                                <div class="tab-content">
+                                    <!-- Tasks Tab start -->
+                                    <div class="tab-pane active" id="que" role="tabpanel">
+                                        <div class="pd-20 profile-task-wrap">
+                                            <div class="container pd-0">
+                                                <!-- Open Task start -->
+                                                <div class="task-title row align-items-center">
+                                                    <div class="col-md-8 col-sm-12">
+                                                        <h5>Open Questions</h5>
+                                                    </div>
+                                                </div>
+                                                <div class="profile-task-list pb-30">
+                                                    <div class="col-lg-6 col-md-12 col-sm-12">
+                                                        <div class="task-type">Choose a Level:</div>
+                                                        <br/>
+                                                        <div class="number-buttons mb-15">
+                                                            {% if user_level is not None %}
+                                                                <button type="button" class="btn number-btn" data-level="1" {% if user_level < 1 %}disabled{% endif %}>1</button>
+                                                                <button type="button" class="btn number-btn" data-level="2" {% if user_level < 2 %}disabled{% endif %}>2</button>
+                                                                <button type="button" class="btn number-btn" data-level="3" {% if user_level < 3 %}disabled{% endif %}>3</button>
+                                                                <button type="button" class="btn number-btn" data-level="4" {% if user_level < 4 %}disabled{% endif %}>4</button>
+                                                                <button type="button" class="btn number-btn" data-level="5" {% if user_level < 5 %}disabled{% endif %}>5</button>
+                                                            {% else %}
+                                                                <button type="button" class="btn number-btn" data-level="1">1</button>
+                                                                <button type="button" class="btn number-btn" data-level="2">2</button>
+                                                                <button type="button" class="btn number-btn" data-level="3">3</button>
+                                                                <button type="button" class="btn number-btn" data-level="4">4</button>
+                                                                <button type="button" class="btn number-btn" data-level="5">5</button>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    <ul id="question-list">
+                                                        {% for question in questions %}
+                                                            <li class="question-item" data-level="{{ question.level }}" {% if user_level is not None and question.level > user_level %}style="display:none;"{% endif %}>
+                                                                <div class="question-container">
+                                                                    <h5>Que ID: {{ question.id }}</h5>
+                                                                    <br/>
+                                                                    <div class="task-type">Level: {{ question.level }}</div>
+                                                                    <div class="task-type">Submitted by: {{ question.user }}</div>
+                                                                    <p>Question: {{ question.question_text }}</p>
+                                                                    <div class="task-type">Created at: {{ question.created_at }}</div>
+                                                                    <br/>
+                                                                    {% if request.user.is_student %}
+                                                                        <a href="{% url 'users:answer_question' question.id %}" class="unique-btn unique-custom-font unique-btn-primary unique-py-4 unique-px-lg-5 unique-d-none unique-d-lg-block" style="background-color: #bdd6ea;">
+                                                                            Answer Question <i class="fa fa-pencil-square-o unique-icon"></i>
+                                                                        </a>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                                <!-- Open Task End -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Tasks Tab End -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const numberButtons = document.querySelectorAll('.number-btn');
+        const questionItems = document.querySelectorAll('.question-item');
+
+        numberButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                numberButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                const level = this.getAttribute('data-level');
+                questionItems.forEach(item => {
+                    if (item.getAttribute('data-level') === level) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Initially display questions of level 1 or the first enabled level
+        let initialLevel = null;
+        numberButtons.forEach(button => {
+            if (!button.disabled && initialLevel === null) {
+                initialLevel = button.getAttribute('data-level');
+                button.click();
+            }
+        });
+
+        if (initialLevel === null) {
+            numberButtons[0].click();
+        }
+    });
+</script>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

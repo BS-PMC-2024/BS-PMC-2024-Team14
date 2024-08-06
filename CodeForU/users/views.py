@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from .decorators import mentor_required
 from .forms import CustomAuthenticationForm, HelpRequestForm, UserRegistrationForm
-from .models import HelpRequest, Mentor, Student
+from .models import HelpRequest, Mentor, Student,Question
 
 
 def get_mentor_ids():
@@ -288,9 +288,29 @@ def delete_help_request(request, request_id):
     return render(request, "submit_help_request.html")
 
 
-def mentor_add_question(request):
-    return render(request, "mentor_add_question.html")
+@login_required(login_url="/users/login/")
+def questions_list(request):
+    questions = Question.objects.all()
+    user_level = None
+    if request.user.is_student:
+        student = Student.objects.get(id=request.user.id)
+        user_level = student.level
+        print("user level: \n" )
+        print(user_level)
+        print("\n")
+        print("user itself: \n")
+        print(request.user)
 
-def student_que(request):
-    return render(request, "student_que.html")
+    return render(request, 'questions_list.html', {
+        'questions': questions,
+        'user_level': user_level
+    })
+
+from django.shortcuts import get_object_or_404
+
+
+@login_required(login_url="/users/login/")
+def answer_question(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+    return render(request, 'answer_question.html', {'question': question})
 

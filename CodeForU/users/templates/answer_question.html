@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+Answer Question
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10">
+        <div class="min-height-200px">
+            <div class="row">
+                <div class="col-sm-12 mb-30">
+                    <div class="card-box height-100-p overflow-hidden">
+                        <div class="profile-tab height-100-p">
+                            <div class="tab height-100-p">
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="que" role="tabpanel">
+                                        <div class="pd-20 profile-task-wrap">
+                                            <div class="container pd-0">
+                                                <div class="task-title row align-items-center">
+                                                    <div class="col-md-8 col-sm-12">
+                                                        <h5>Answer Question</h5>
+                                                    </div>
+                                                </div>
+                                                <div class="profile-task-list pb-30">
+                                                    <div class="question-container">
+                                                        <h5>Que ID: {{ question.id }}</h5>
+                                                        <br/>
+                                                        <div class="task-type">Level: {{ question.level }}</div>
+                                                        <div class="task-type">Submitted by: {{ question.user }}</div>
+                                                        <p>Question: {{ question.question_text }}</p>
+                                                        <div class="task-type">Created at: {{ question.created_at }}</div>
+                                                        <br/>
+                                                    </div>
+                                                    <form method="post">
+                                                        {% csrf_token %}
+                                                        <div class="mb-3">
+                                                            <label for="code_answer" class="form-label">Your Code:</label>
+                                                            <textarea class="form-control" id="code_answer" name="code_answer" rows="10" required></textarea>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">Submit Answer</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Tasks Tab End -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include CodeMirror CSS and JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/selection/active-line.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var editor = CodeMirror.fromTextArea(document.getElementById('code_answer'), {
+            lineNumbers: true,
+            mode: 'python',
+            matchBrackets: true,
+            styleActiveLine: true,
+            theme: 'default'
+        });
+    });
+</script>
+{% endblock %}
