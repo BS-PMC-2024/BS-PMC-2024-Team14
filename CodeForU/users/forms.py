@@ -6,7 +6,7 @@ import django
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
-from .models import HelpRequest, User
+from .models import HelpRequest, StudentMentorRequest, User
 
 
 class CustomAuthenticationForm(AuthenticationForm):
@@ -165,6 +165,26 @@ class UserRegistrationForm(forms.ModelForm):
 class HelpRequestForm(forms.ModelForm):
     class Meta:
         model = HelpRequest
+        fields = ["subject", "message"]
+        widgets = {
+            "subject": forms.TextInput(
+                attrs={
+                    "style": "width: 100%; padding: 10px;border:1px solid #987D9A;border-radius:10px;",
+                    "class": "form-control",
+                }
+            ),
+            "message": forms.Textarea(
+                attrs={
+                    "style": "width: 100%; height: 200px; padding: 10px;border:1px solid #987D9A;border-radius:10px;",
+                    "class": "form-control",
+                }
+            ),
+        }
+
+
+class StudentMentorRequestForm(forms.ModelForm):
+    class Meta:
+        model = StudentMentorRequest
         fields = ["subject", "message"]
         widgets = {
             "subject": forms.TextInput(

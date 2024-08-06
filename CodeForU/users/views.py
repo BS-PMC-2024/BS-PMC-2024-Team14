@@ -1,3 +1,5 @@
+import random
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -5,9 +7,14 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .decorators import mentor_required
-from .forms import CustomAuthenticationForm, HelpRequestForm, UserRegistrationForm
-from .models import HelpRequest, Mentor, Student,Question
+from .decorators import mentor_required, student_required
+from .forms import (
+    CustomAuthenticationForm,
+    HelpRequestForm,
+    StudentMentorRequestForm,
+    UserRegistrationForm,
+)
+from .models import HelpRequest, Mentor, Question, Student, StudentMentorRequest
 
 
 def get_mentor_ids():
@@ -89,7 +96,10 @@ def register_view(request):
                 mentor.set_password(form.cleaned_data["password"])
                 mentor.save()
             else:
-
+                all_mentors = Mentor.objects.all()
+                random_index = random.randint(0, len(all_mentors) - 1)
+                res_mentor = all_mentors[random_index]
+                print(f"your responsible mentor is {res_mentor}")
                 student = Student.objects.create(
                     email=user.email,
                     first_name=user.first_name,
@@ -99,6 +109,7 @@ def register_view(request):
                     gender=user.gender,
                     passport_id=user.passport_id,
                     level=0,  # Add additional fields for students here
+                    mentor_responsible=res_mentor.id,
                 )
                 student.set_password(form.cleaned_data["password"])
                 student.save()
@@ -279,7 +290,7 @@ def submit_help_request(request):
 
 @mentor_required
 def delete_help_request(request, request_id):
-    print("dasdasfasd")
+    # print("dasdasfasd")
     help_request = HelpRequest.objects.get(id=request_id)
     print(help_request)
     if request.method == "POST":
@@ -295,16 +306,18 @@ def questions_list(request):
     if request.user.is_student:
         student = Student.objects.get(id=request.user.id)
         user_level = student.level
-        print("user level: \n" )
+        print("user level: \n")
         print(user_level)
         print("\n")
         print("user itself: \n")
         print(request.user)
 
-    return render(request, 'questions_list.html', {
-        'questions': questions,
-        'user_level': user_level
-    })
+    return render(
+        request,
+        "questions_list.html",
+        {"questions": questions, "user_level": user_level},
+    )
+
 
 from django.shortcuts import get_object_or_404
 
@@ -312,5 +325,38 @@ from django.shortcuts import get_object_or_404
 @login_required(login_url="/users/login/")
 def answer_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
-    return render(request, 'answer_question.html', {'question': question})
+    return render(request, "answer_question.html", {"question": question})
 
+
+@student_required
+def student_mentor_request(request):
+    st_m_request = None
+    if request.method == "POST":
+        form = StudentMentorRequestForm(request.POST)
+        if form.is_valid():
+            student = Student.objects.get(id=request.user.id)
+            st_m_request = form.save(commit=False)
+            st_m_request.user = student.id
+            st_m_request.mentor_responsible = student.mentor_responsible
+            st_m_request.save()
+            return redirect(reverse("users:student_mentor_request"))
+    else:
+        student_id = request.user.id
+        st_m_requests = StudentMentorRequest.objects.filter(user=student_id)
+
+        form = StudentMentorRequestForm()
+    return render(
+        request,
+        "student_mentor_request.html",
+        {"form": form, "requests": st_m_requests},
+    )
+
+
+@student_required
+def delete_student_mentor_request(request, request_id):
+    st_m_request = StudentMentorRequest.objects.get(id=request_id)
+    print(st_m_request)
+    if request.method == "POST":
+        st_m_request.delete()
+        return redirect(reverse("users:student_mentor_request"))
+    return render(request, "student_mentor_request.html")

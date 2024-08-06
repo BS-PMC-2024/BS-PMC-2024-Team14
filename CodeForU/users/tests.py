@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from .models import HelpRequest, Mentor, Student, User, Question
+from .models import HelpRequest, Mentor, Question, Student, StudentMentorRequest, User
 
 
 def get_mentor_ids():
@@ -24,7 +24,19 @@ class RegisterViewTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.register_url = reverse("users:register")
-        self.mentor_ids = get_mentor_ids()
+
+        # Create a mentor for testing
+        self.mentor = Mentor.objects.create(
+            email="mentor@example.com",
+            first_name="Mentor",
+            last_name="Example",
+            birth_date="1990-01-01",
+            phone="0987654321",
+            gender="Female",
+            passport_id="M123456789",
+            is_approved=True,
+        )
+
         self.valid_student_data = {
             "email": "student@example.com",
             "first_name": "Student",
@@ -33,17 +45,6 @@ class RegisterViewTests(TestCase):
             "phone": "1234567890",
             "gender": "Male",
             "passport_id": "1122334455",
-            "password": "Testpassword1!",
-            "confirm_password": "Testpassword1!",
-        }
-        self.valid_mentor_data = {
-            "email": "mentor@example.com",
-            "first_name": "Mentor",
-            "last_name": "Example",
-            "birth_date": "1990-01-01",
-            "phone": "0987654321",
-            "gender": "Female",
-            "passport_id": self.mentor_ids[0],
             "password": "Testpassword1!",
             "confirm_password": "Testpassword1!",
         }
@@ -62,6 +63,7 @@ class RegisterViewTests(TestCase):
         invalid_data["confirm_password"] = "differentpassword"
         response = self.client.post(self.register_url, invalid_data)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Passwords do not match")
 
     def test_register_missing_fields(self):
         invalid_data = self.valid_student_data.copy()
@@ -245,7 +247,7 @@ class HelpRequestAndViewTest(TestCase):
             birth_date="1990-01-01",
             phone="1234567890",
             passport_id="A12345678",
-            is_approved=True
+            is_approved=True,
         )
         self.client.force_login(self.mentor)
         self.url = reverse("users:submit_help_request")
@@ -253,18 +255,19 @@ class HelpRequestAndViewTest(TestCase):
     # --- Model Tests ---
     def test_help_request_str(self):
         help_request = HelpRequest.objects.create(
-            user=self.mentor.id,
-            subject="Test Subject",
-            message="Test Message"
+            user=self.mentor.id, subject="Test Subject", message="Test Message"
         )
-        self.assertEqual(str(help_request), f"Request from - {self.mentor.email} {help_request.subject}")
+        self.assertEqual(
+            str(help_request),
+            f"Request from - {self.mentor.email} {help_request.subject}",
+        )
 
     def test_help_request_save_responded_at(self):
         help_request = HelpRequest.objects.create(
             user=self.mentor.id,
             subject="Test Subject",
             message="Test Message",
-            is_resolved=True
+            is_resolved=True,
         )
         help_request.save()
         self.assertIsNotNone(help_request.responded_at)
@@ -274,18 +277,18 @@ class HelpRequestAndViewTest(TestCase):
             user=self.mentor.id,
             subject="Test Subject",
             message="Test Message",
-            is_resolved=True
+            is_resolved=True,
         )
         with self.assertRaises(Exception):
             help_request.clean()
-    
+
     def test_help_request_valid_clean(self):
         help_request = HelpRequest(
             user=self.mentor.id,
             subject="Test Subject",
             message="Test Message",
             response="Test Response",
-            is_resolved=True
+            is_resolved=True,
         )
         try:
             help_request.clean()  # Should not raise an exception
@@ -300,27 +303,31 @@ class HelpRequestAndViewTest(TestCase):
         self.assertContains(response, "<form")  # Ensure the form is in the response
 
     def test_post_request_valid_form(self):
-        response = self.client.post(self.url, {
-            "subject": "Test Subject",
-            "message": "Test Message",
-        })
+        response = self.client.post(
+            self.url,
+            {
+                "subject": "Test Subject",
+                "message": "Test Message",
+            },
+        )
         self.assertEqual(response.status_code, 302)  # Redirect status code
         self.assertTrue(HelpRequest.objects.filter(user=self.mentor.id).exists())
 
     def test_post_request_invalid_form(self):
-        response = self.client.post(self.url, {
-            "subject": "",
-            "message": "",
-        })
+        response = self.client.post(
+            self.url,
+            {
+                "subject": "",
+                "message": "",
+            },
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, 'form', 'subject', 'This field is required.')
-        self.assertFormError(response, 'form', 'message', 'This field is required.')
+        self.assertFormError(response, "form", "subject", "This field is required.")
+        self.assertFormError(response, "form", "message", "This field is required.")
 
     def test_help_request_display(self):
         HelpRequest.objects.create(
-            user=self.mentor.id,
-            subject="Test Subject",
-            message="Test Message"
+            user=self.mentor.id, subject="Test Subject", message="Test Message"
         )
         response = self.client.get(self.url)
         self.assertContains(response, "Test Subject")
@@ -329,6 +336,7 @@ class HelpRequestAndViewTest(TestCase):
 
 User = get_user_model()
 
+
 class QuestionsListViewTests(TestCase):
 
     def setUp(self):
@@ -336,14 +344,14 @@ class QuestionsListViewTests(TestCase):
 
         # Create test users
         self.student_user = User.objects.create_user(
-            email='student@example.com',
-            first_name='Student',
-            last_name='User',
-            phone='1234567890',
-            birth_date='2000-01-01',
-            passport_id='123456789',
-            gender='Male',
-            password='password123'
+            email="student@example.com",
+            first_name="Student",
+            last_name="User",
+            phone="1234567890",
+            birth_date="2000-01-01",
+            passport_id="123456789",
+            gender="Male",
+            password="password123",
         )
         self.student = Student.objects.create(
             id=self.student_user.id,
@@ -354,55 +362,54 @@ class QuestionsListViewTests(TestCase):
             birth_date=self.student_user.birth_date,
             passport_id=self.student_user.passport_id,
             gender=self.student_user.gender,
-            level=5
+            level=5,
         )
 
         self.mentor_user = User.objects.create_user(
-            email='mentor@example.com',
-            first_name='Mentor',
-            last_name='User',
-            phone='1234567890',
-            birth_date='1985-01-01',
-            passport_id='987654321',
-            gender='Female',
-            password='password123'
+            email="mentor@example.com",
+            first_name="Mentor",
+            last_name="User",
+            phone="1234567890",
+            birth_date="1985-01-01",
+            passport_id="987654321",
+            gender="Female",
+            password="password123",
         )
 
         # Create test questions
         self.question1 = Question.objects.create(
             user=self.student_user.id,
-            question_text='What is the capital of France?',
-            level=1
+            question_text="What is the capital of France?",
+            level=1,
         )
         self.question2 = Question.objects.create(
             user=self.mentor_user.id,
-            question_text='What is the capital of Germany?',
-            level=2
+            question_text="What is the capital of Germany?",
+            level=2,
         )
 
     def test_questions_list_requires_login(self):
-        response = self.client.get(reverse('users:questions_list'))
-        self.assertRedirects(response, '/users/login/?next=/users/questions_list/')
-
+        response = self.client.get(reverse("users:questions_list"))
+        self.assertRedirects(response, "/users/login/?next=/users/questions_list/")
 
     def test_questions_list_as_mentor(self):
-        self.client.login(email='mentor@example.com', password='password123')
-        response = self.client.get(reverse('users:questions_list'))
+        self.client.login(email="mentor@example.com", password="password123")
+        response = self.client.get(reverse("users:questions_list"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'questions_list.html')
-        self.assertContains(response, 'What is the capital of France?')
-        self.assertContains(response, 'What is the capital of Germany?')
-        self.assertIsNone(response.context['user_level'])
+        self.assertTemplateUsed(response, "questions_list.html")
+        self.assertContains(response, "What is the capital of France?")
+        self.assertContains(response, "What is the capital of Germany?")
+        self.assertIsNone(response.context["user_level"])
 
     def test_question_creation(self):
         question = Question.objects.create(
             user=self.student_user.id,
-            question_text='What is the capital of Spain?',
-            level=3
+            question_text="What is the capital of Spain?",
+            level=3,
         )
         self.assertEqual(question.user, self.student_user.id)
-        self.assertEqual(question.question_text, 'What is the capital of Spain?')
+        self.assertEqual(question.question_text, "What is the capital of Spain?")
         self.assertEqual(question.level, 3)
         self.assertIsNotNone(question.created_at)
 
@@ -410,3 +417,110 @@ class QuestionsListViewTests(TestCase):
         User.objects.all().delete()
         Question.objects.all().delete()
         Student.objects.all().delete()
+
+
+class StudentMentorRequestAndViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Create a mentor user
+        self.mentor = Mentor.objects.create(
+            email="mentor@example.com",
+            first_name="John",
+            last_name="Doe",
+            birth_date="1990-01-01",
+            phone="1234567890",
+            passport_id="A12345678",
+            is_approved=True,
+        )
+        # Create a student user
+        self.student = Student.objects.create(
+            email="student@example.com",
+            first_name="Jane",
+            last_name="Smith",
+            birth_date="2000-01-01",
+            phone="0987654321",
+            passport_id="B87654321",
+            mentor_responsible=self.mentor.id,
+        )
+        self.client.force_login(self.student)
+        self.url = reverse("users:student_mentor_request")
+
+    # --- Model Tests ---
+    def test_student_mentor_request_str(self):
+        student_mentor_request = StudentMentorRequest.objects.create(
+            user=self.student.id,
+            mentor_responsible=self.mentor.id,
+            subject="Test Subject",
+            message="Test Message",
+        )
+        self.assertEqual(
+            str(student_mentor_request),
+            f"Request from {self.student.email} to {self.mentor.email} - {student_mentor_request.subject}",
+        )
+
+    def test_student_mentor_request_save_responded_at(self):
+        student_mentor_request = StudentMentorRequest.objects.create(
+            user=self.student.id,
+            mentor_responsible=self.mentor.id,
+            subject="Test Subject",
+            message="Test Message",
+            is_resolved=True,
+        )
+        student_mentor_request.save()
+        self.assertIsNotNone(student_mentor_request.responded_at)
+
+    def test_student_mentor_request_clean(self):
+        student_mentor_request = StudentMentorRequest(
+            user=self.student.id,
+            mentor_responsible=self.mentor.id,
+            subject="Test Subject",
+            message="Test Message",
+            is_resolved=True,
+        )
+        with self.assertRaises(Exception):
+            student_mentor_request.clean()
+
+    def test_student_mentor_request_valid_clean(self):
+        student_mentor_request = StudentMentorRequest(
+            user=self.student.id,
+            mentor_responsible=self.mentor.id,
+            subject="Test Subject",
+            message="Test Message",
+            response="Test Response",
+            is_resolved=True,
+        )
+        try:
+            student_mentor_request.clean()  # Should not raise an exception
+        except Exception as e:
+            self.fail(f"clean() raised Exception unexpectedly: {e}")
+
+    # --- View Tests ---
+    def test_get_request(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "student_mentor_request.html")
+        self.assertContains(response, "<form")  # Ensure the form is in the response
+
+    def test_post_request_valid_form(self):
+        response = self.client.post(
+            self.url,
+            {
+                "subject": "Test Subject",
+                "message": "Test Message",
+            },
+        )
+        self.assertEqual(response.status_code, 302)  # Redirect status code
+        self.assertTrue(
+            StudentMentorRequest.objects.filter(user=self.student.id).exists()
+        )
+
+    def test_student_mentor_request_display(self):
+        StudentMentorRequest.objects.create(
+            user=self.student.id,
+            mentor_responsible=self.mentor.id,
+            subject="Test Subject",
+            message="Test Message",
+        )
+        response = self.client.get(self.url)
+        self.assertContains(response, "Test Subject")
+        self.assertContains(response, "Test Message")
