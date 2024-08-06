@@ -148,6 +148,10 @@
           <a href="/chat/" class="nav-item nav-link">Add Question</a>
           <a href="/users/submit-help-request" class="nav-item nav-link">Requests</a>
           {% endif %}
+          {% if user.is_student %}
+          <a href="/users/student_mentor_request" class="nav-item nav-link">Requests</a>
+          {% endif %}
+
           <div class="nav-item dropdown">
             <a
               href="#"

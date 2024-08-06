@@ -75,8 +75,15 @@ class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    gender = models.CharField(max_length=10, verbose_name="Gender", choices=[('Male', 'Male'), ('Female', 'Female')], default='Male')
-    saved_questions = models.ManyToManyField(Question, related_name='saved_by', blank=True)  # Reference the Question model
+    gender = models.CharField(
+        max_length=10,
+        verbose_name="Gender",
+        choices=[("Male", "Male"), ("Female", "Female")],
+        default="Male",
+    )
+    saved_questions = models.ManyToManyField(
+        Question, related_name="saved_by", blank=True
+    )  # Reference the Question model
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
@@ -110,6 +117,7 @@ class User(AbstractUser):
         except Exception as e:
             print(f"Error checking if user {self.email} is a mentor: {e}")
             return False
+
     @property
     def is_student(self):
         try:
@@ -125,6 +133,7 @@ class Student(User):
     level = models.IntegerField(
         verbose_name="Student Level", blank=True, null=True, default=0
     )
+    mentor_responsible = models.IntegerField(blank=True, null=True)
 
     class Meta:
         verbose_name = "Student"
@@ -138,11 +147,12 @@ class Mentor(User):
         verbose_name = "Mentor"
         verbose_name_plural = "Mentors"
 
+
 from django.utils import timezone
 
 
 class HelpRequest(models.Model):
-    user = models.IntegerField(blank=True,null=True)
+    user = models.IntegerField(blank=True, null=True)
     subject = models.CharField(max_length=255)
     message = models.TextField()
     response = models.TextField(blank=True, null=True)
@@ -151,7 +161,7 @@ class HelpRequest(models.Model):
     responded_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        mentor=Mentor.objects.get(id=self.user)
+        mentor = Mentor.objects.get(id=self.user)
         return f"Request from - {mentor.email} {self.subject}"
 
     def save(self, *args, **kwargs):
@@ -163,7 +173,42 @@ class HelpRequest(models.Model):
     def clean(self):
         # Ensure a response is provided if the request is marked as resolved
         if self.is_resolved and not self.response:
-            raise Exception('A response must be provided if the request is marked as resolved.')
+            raise Exception(
+                "A response must be provided if the request is marked as resolved."
+            )
+
+    def delete(self, *args, **kwargs):
+        # Custom delete logic if needed (currently just calls the superclass)
+        super().delete(*args, **kwargs)
+
+
+class StudentMentorRequest(models.Model):
+    user = models.IntegerField(blank=True, null=True)
+    mentor_responsible = models.IntegerField(blank=True, null=True)
+    subject = models.CharField(max_length=255)
+    message = models.TextField()
+    response = models.TextField(blank=True, null=True)
+    is_resolved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    responded_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        student = Student.objects.get(id=self.user)
+        mentor = Mentor.objects.get(id=self.mentor_responsible)
+        return f"Request from {student.email} to {mentor.email} - {self.subject}"
+
+    def save(self, *args, **kwargs):
+        # Set responded_at if the request is marked as resolved
+        if self.is_resolved and not self.responded_at:
+            self.responded_at = timezone.now()
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        # Ensure a response is provided if the request is marked as resolved
+        if self.is_resolved and not self.response:
+            raise Exception(
+                "A response must be provided if the request is marked as resolved."
+            )
 
     def delete(self, *args, **kwargs):
         # Custom delete logic if needed (currently just calls the superclass)
