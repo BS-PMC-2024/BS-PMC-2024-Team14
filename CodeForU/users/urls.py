@@ -40,4 +40,5 @@ urlpatterns = [
         views.delete_student_mentor_request,
         name="delete_student_mentor_request",
     ),
+    path("student_feedback/",views.student_feedback,name="student_feedback"),
 ]

@@ -524,3 +524,51 @@ class StudentMentorRequestAndViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertContains(response, "Test Subject")
         self.assertContains(response, "Test Message")
+
+
+
+
+
+class StudentFeedbackViewTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        # Create a student user
+        self.student_user = User.objects.create_user(
+            email='student@example.com',
+            password='password123A@',
+            first_name='John',
+            last_name='Doe',
+            phone='1234567890',
+            birth_date='2000-01-01',
+            passport_id='A12345678',
+            gender='Male',
+        )
+        # Assign the user as a student
+        self.student = Student.objects.create(
+            id=self.student_user.id,
+            email=self.student_user.email,
+            first_name=self.student_user.first_name,
+            last_name=self.student_user.last_name,
+            phone=self.student_user.phone,
+            birth_date=self.student_user.birth_date,
+            passport_id=self.student_user.passport_id,
+            gender=self.student_user.gender,
+            level=1,
+            rating=3
+        )
+        # Log the student in
+        self.client.force_login(self.student)
+        self.url = reverse('users:student_feedback')
+
+    def test_student_feedback_post(self):
+        response = self.client.post(self.url, {'rating': 5})
+        self.student.refresh_from_db()
+        self.assertEqual(response.status_code, 302)  # Check for redirect status code
+        self.assertEqual(self.student.rating, 5)  # Check if the rating was updated
+
+    def test_student_feedback_get_request(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)  # Check for redirect status code
+
+

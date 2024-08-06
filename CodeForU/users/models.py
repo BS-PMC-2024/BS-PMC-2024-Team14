@@ -134,6 +134,7 @@ class Student(User):
         verbose_name="Student Level", blank=True, null=True, default=0
     )
     mentor_responsible = models.IntegerField(blank=True, null=True)
+    rating = models.IntegerField(blank=True,null=True)
 
     class Meta:
         verbose_name = "Student"

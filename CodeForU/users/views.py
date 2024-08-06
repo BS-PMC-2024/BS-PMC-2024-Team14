@@ -132,8 +132,13 @@ def mentor_dashboard(request):
 
 
 @login_required(login_url="/users/login")
+@student_required
 def student_dashboard(request):
-    return render(request, "student_dashboard.html")
+    student = Student.objects.get(user_ptr_id=request.user.id )
+
+    print(f"user id:{request.user.id}")
+    print(student)
+    return render(request, "student_dashboard.html" , {"student":student})
 
 
 def transition_stu(request):
@@ -360,3 +365,17 @@ def delete_student_mentor_request(request, request_id):
         st_m_request.delete()
         return redirect(reverse("users:student_mentor_request"))
     return render(request, "student_mentor_request.html")
+
+@student_required
+def student_feedback(request):
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        user = request.user
+
+        if user.is_student:
+            student = Student.objects.get(id=user.id)
+            student.rating = int(rating)
+            student.save()
+            return redirect(reverse('users:student_dashboard'))  # Redirect to a success page or any other page
+
+    return redirect(reverse('users:student_dashboard'))
