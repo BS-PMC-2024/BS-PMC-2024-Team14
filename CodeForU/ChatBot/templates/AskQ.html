@@ -20,10 +20,25 @@ Chat with GPT
                             {{ message.content }}
                         {% endif %}
                         {% if message.role == 'assistant' %}
-                            <form method="post" action="{% url 'save_question' %}" class="save-question-form" style="display:inline;">
+                            <form method="post" action="{% url 'save_question' %}" class="save-question-form mt-3">
                                 {% csrf_token %}
                                 <input type="hidden" name="question_text" value="{{ message.content }}">
-                                <button type="submit" class="btn btn-link">Save Question</button>
+                                <div class="mb-3 level-container" style="display: none;">
+                                    <label for="questionLevel{{ forloop.counter }}" class="form-label">Select Level</label>
+                                    <select class="form-select" id="questionLevel{{ forloop.counter }}" name="level" required>
+                                        <option value="" disabled selected>Select level</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                                <div class="confirmation-buttons" style="display: none;">
+                                    <button type="button" class="btn btn-success confirm-save">Yes</button>
+                                    <button type="button" class="btn btn-danger cancel-save">No</button>
+                                </div>
+                                <button type="button" class="btn btn-primary show-level">Save Question</button>
                             </form>
                         {% endif %}
                     </div>
@@ -60,7 +75,6 @@ Chat with GPT
                 <ul>
                     <li>To get Code Snippets use: write code or write some code</li>
                     <li>Clear chat (clears the chat)</li>
-                    
                     <!-- Add more commands as needed -->
                 </ul>
             </div>
@@ -68,8 +82,45 @@ Chat with GPT
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM fully loaded and parsed");
+    
+        document.querySelectorAll('.show-level').forEach(function(button) {
+            console.log("Attaching event listener to show-level button");
+    
+            button.addEventListener('click', function() {
+                console.log("Show-level button clicked");
+                const form = button.closest('form');
+                form.querySelector('.level-container').style.display = 'block';
+                form.querySelector('.confirmation-buttons').style.display = 'block';
+                button.style.display = 'none';
+            });
+        });
+    
+        document.querySelectorAll('.confirm-save').forEach(function(button) {
+            console.log("Attaching event listener to confirm-save button");
+    
+            button.addEventListener('click', function() {
+                console.log("Confirm-save button clicked");
+                const form = button.closest('form');
+                form.submit();
+            });
+        });
+    
+        document.querySelectorAll('.cancel-save').forEach(function(button) {
+            console.log("Attaching event listener to cancel-save button");
+    
+            button.addEventListener('click', function() {
+                console.log("Cancel-save button clicked");
+                const form = button.closest('form');
+                form.querySelector('.level-container').style.display = 'none';
+                form.querySelector('.confirmation-buttons').style.display = 'none';
+                form.querySelector('.show-level').style.display = 'block';
+            });
+        });
+    });
+    </script>
 {% endblock %}
 
-{% block extra_scripts %}
-<script src="{% static 'path/to/bootstrap.bundle.min.js' %}"></script>
-{% endblock %}
+

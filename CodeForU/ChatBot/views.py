@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from django.shortcuts import redirect
 load_dotenv()
 
-# @mentor_required
+@mentor_required
 @csrf_exempt
 def chat_page(request):
     client = OpenAI()
@@ -88,3 +88,11 @@ def test_openai_api(request):
         return JsonResponse({"error": f"An error occurred: {e}"})
 
 
+@csrf_exempt
+def save_question(request):
+    if request.method == 'POST':
+        question_text = request.POST.get('question_text')
+        level = request.POST.get('level')
+        user_id = request.user.id  # Manually set the user ID
+        Question.objects.create(user=user_id, question_text=question_text, level=level)
+        return redirect('chat_page')
