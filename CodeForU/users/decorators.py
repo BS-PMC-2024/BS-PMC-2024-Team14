@@ -3,7 +3,7 @@
 from functools import wraps
 
 from django.http import HttpResponseForbidden
-
+from django.shortcuts import redirect
 from .models import Mentor, Student
 
 
@@ -17,13 +17,9 @@ def mentor_required(view_func):
 
                 return view_func(request, *args, **kwargs)
             else:
-                return HttpResponseForbidden(
-                    "You do not have permission to access this page!!."
-                )
+                return redirect('homepage')
         except:
-            return HttpResponseForbidden(
-                "You do not have permission to access this page."
-            )
+            return redirect('homepage')
 
     return _wrapped_view
 
@@ -38,12 +34,8 @@ def student_required(view_func):
 
                 return view_func(request, *args, **kwargs)
             else:
-                return HttpResponseForbidden(
-                    "You do not have permission to access this page!!."
-                )
+                return redirect('homepage')
         except:
-            return HttpResponseForbidden(
-                "You do not have permission to access this page."
-            )
+            return redirect('homepage')
 
     return _wrapped_view

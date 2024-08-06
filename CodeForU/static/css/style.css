@@ -506,20 +506,86 @@ body {
     padding: 170px 0px;
     max-width: 56px;
   }
-
-  /*------------------------------------------------------------------
+/*------------------------------------------------------------------
         6. main banner
 -------------------------------------------------------------------*/
+
+.upload-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.upload-button {
+  background-color: #6ddafb; /* צבע רקע ירוק */
+  color: white; /* צבע טקסט לבן */
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+  background-color: #cef8ff; /* שינוי צבע רקע בעת ריחוף */
+}
+
+.upload-button:active {
+  background-color: #6ddafb; /* שינוי צבע רקע בעת לחיצה */
+}
+
+
+.star-rating {
+  direction: rtl;
+  display: inline-block;
+  font-size: 0;
+  position: relative;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  font-size: 20px;
+  letter-spacing: 10px;
+  color: #ccc;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+}
+
+.star-rating label:before {
+  content: "★";
+  font-family: FontAwesome;
+  position: relative;
+  font-size: 2em;
+}
+
+.star-rating input:checked ~ label {
+  color: #f5c518;
+}
+
+.star-rating input:hover ~ label,
+.star-rating label:hover ~ label {
+  color: #f5c518;
+}
+
+
+
+
+
 
 .slide_cont {
     float: left;
     width: 100%;
-    margin-top: 85px;
+    margin-top: 400px;
+    text-align: center;
 }
 
 .slide_cont h2 {
     color: #fff;
-    font-size: 55px;
+    font-size: 40px;
     font-weight: 600;
     line-height: 60px;
     margin: 0;
@@ -540,9 +606,9 @@ body {
 }
 
 .slide_banner1 {
-    background-image: url('../img/slide1.png');
+    background-image: url('../img/imgindex.webp');
     min-height: 450px;
-    position: relative;
+    position:relative;
     background-repeat: no-repeat;
     background-size: auto;
     background-position: bottom center;
@@ -558,7 +624,7 @@ body {
     margin-top: 110px;
     float: left;
     margin-right: 0;
-    position: relative;
+    position:absolute;
     right: 150px;
     margin-bottom: 0;
 }
@@ -593,7 +659,7 @@ body {
     margin-top: 10px;
 }
 
-/**-- slide style 2 **/
+
 
 .video {
     text-align: center;
