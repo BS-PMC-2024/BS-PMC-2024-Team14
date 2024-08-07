@@ -1,13 +1,13 @@
 pipeline {
     agent any
 
-    // environment {
-    //     DOCKER_IMAGE = 'mohamadaj/bs-pmc-2024-team14-web'
-    //     REGISTRY = 'docker.io'
-    //     REGISTRY_CREDENTIALS = 'docker-hub-14'  // Jenkins credentials ID for Docker Hub
-    //     DOCKERFILE_PATH = 'dockerfile'
-    //     BUILD_CONTEXT = '.'
-    // }
+    environment {
+        DOCKER_IMAGE = 'mohamadaj/bs-pmc-2024-team14-web'
+        REGISTRY = 'docker.io'
+        REGISTRY_CREDENTIALS = 'docker-hub-14'  // Jenkins credentials ID for Docker Hub
+        DOCKERFILE_PATH = 'dockerfile'
+        BUILD_CONTEXT = '.'
+    }
 
     stages {
         stage('Clean Up Old Docker Images') {
