@@ -396,7 +396,7 @@ class QuestionsListViewTests(TestCase):
         self.client.login(email="mentor@example.com", password="password123")
         response = self.client.get(reverse("users:questions_list"))
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
         self.assertTemplateUsed(response, "questions_list.html")
         self.assertContains(response, "What is the capital of France?")
         self.assertContains(response, "What is the capital of Germany?")
