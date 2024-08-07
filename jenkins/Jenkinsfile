@@ -54,20 +54,6 @@ pipeline {
                 sh 'docker rmi -f $DOCKER_IMAGE || true'
             }
         }
-
-        success {
-            script {
-                // Report success status to GitHub using GitHub Integration Plugin
-                githubNotify context: 'continuous-integration/jenkins', status: 'SUCCESS'
-            }
-        }
-
-        failure {
-            script {
-                // Report failure status to GitHub using GitHub Integration Plugin
-                githubNotify context: 'continuous-integration/jenkins', status: 'FAILURE'
-            }
-        }
     }
 }
 
