@@ -41,4 +41,6 @@ urlpatterns = [
         name="delete_student_mentor_request",
     ),
     path("student_feedback/",views.student_feedback,name="student_feedback"),
+    path('reset_level_updated/', views.reset_level_updated, name='reset_level_updated'),
+    path('level_up/<int:student_id>/', views.level_up_view, name='level_up'),
 ]

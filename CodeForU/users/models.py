@@ -112,20 +112,20 @@ class User(AbstractUser):
     def is_mentor(self):
         try:
             mentor = Mentor.objects.get(user_ptr_id=self.id)
-            print(f"Checking if user {self.email} is a mentor: {mentor}")
+            # print(f"Checking if user {self.email} is a mentor: {mentor}")
             return True if mentor else False
         except Exception as e:
-            print(f"Error checking if user {self.email} is a mentor: {e}")
+            # print(f"Error checking if user {self.email} is a mentor: {e}")
             return False
 
     @property
     def is_student(self):
         try:
             student = Student.objects.get(user_ptr_id=self.id)
-            print(f"Checking if user {self.email} is a student: {student}")
+            # print(f"Checking if user {self.email} is a student: {student}")
             return True if student else False
         except Exception as e:
-            print(f"Error checking if user {self.email} is a student: {e}")
+            # print(f"Error checking if user {self.email} is a student: {e}")
             return False
 
 
@@ -136,6 +136,7 @@ class Student(User):
     mentor_responsible = models.IntegerField(blank=True, null=True)
     rating = models.IntegerField(blank=True, null=True)
     mentor_rating = models.IntegerField(blank=True, null=True)
+    level_updated = models.BooleanField(blank=True,null=True,default=False)
 
     class Meta:
         verbose_name = "Student"
