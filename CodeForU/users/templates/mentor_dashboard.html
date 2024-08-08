@@ -6,9 +6,6 @@ Mentor Dashboard
 {% load static %}
 
 {% block content %}
-<br/>
-<h1 style="color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">  Welcome!</h1>
-<br/>
 
 
 <head>
@@ -50,7 +47,9 @@ Mentor Dashboard
 </head>
 <body >
    
-
+    <br/>
+    <h1 style="display:flex;justify-content: center; align-items: center; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">  Welcome {{mentor.first_name}}!</h1>
+    <br/>
     <section id="banner_parallax" class="slide_banner1">
         <div class="container">
            <div class="row">

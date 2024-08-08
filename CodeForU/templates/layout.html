@@ -193,12 +193,21 @@
           <a href="{% url 'users:questions_list' %}" class="nav-item nav-link custom-button">Questions</a>
           {% if user.is_mentor %}
           <a href="/chat/" class="nav-item nav-link custom-button">Add Question</a>
-          <a href="/users/submit-help-request" class="nav-item nav-link custom-button">Requests</a>
-          {% endif %}
-          {% if user.is_student %}
-          <a href="/users/student_mentor_request" class="nav-item nav-link custom-button">Requests</a>
-          {% endif %}
+          <a href="/users/submit-help-request" class="nav-item nav-link custom-button"
+            >Requests</a
+          >
+          <a href="/users/mentor_studentlist" class="nav-item nav-link custom-button"
+            >My Students</a
+          >
+          <a href="/users/mentor_profile" class="nav-item nav-link custom-button">Profile</a>
 
+          {% endif %} {% if user.is_student %}
+          <a href="/users/student_mentor_request" class="nav-item nav-link custom-button"
+            >Requests</a
+          >
+          <a href="/users/student_profile" class="nav-item nav-link custom-button">Profile</a>
+
+          {% endif %}
           
           
         </div>
