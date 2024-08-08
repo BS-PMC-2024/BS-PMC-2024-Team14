@@ -1,8 +1,8 @@
-{% extends "layout.html" %}
+
 {% load static %}
 
 {% block title %}
-Sign Up
+
 {% endblock %}
 
 {% block content %}
@@ -21,9 +21,33 @@ Sign Up
     <link rel="stylesheet" type="text/css" href={% static "css/style.css" %}>
     <link rel="stylesheet" type="text/css" href={% static "css/custom.css" %}>
     <!--===============================================================================================-->
+    <style>
+        /* עיצוב הלחצן */
+.back-button {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: fixed;
+    top: 20px; /* מרחק מהחלק העליון של הדף */
+    right: 20px; /* מרחק מהקצה הימני של הדף */
+    background-color: rgb(153, 229, 252); /* צבע רקע */
+    color: white; /* צבע טקסט */
+    padding: 10px 20px; /* ריווח פנימי */
+    border-radius: 5px; /* פינות מעוגלות */
+    text-decoration: none; /* ביטול קו תחתון */
+    font-size: 16px; /* גובה הגופן */
+    z-index: 1000; /* להבטיח שהלחצן יופיע מעל לתוכן אחר */
+}
+
+/* שינוי צבע הלחצן בעת מעבר עכבר */
+.back-button:hover {
+    background-color: #d1e7ff; /* צבע רקע בעת מעבר עכבר */
+}
+    </style>
 </head>
 <body>
     <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins">
+        <a href="{% url 'users:login' %}" class="btn btn-secondary back-button">
+            Back to Login
+        </a>
         <div class="wrapper wrapper--w680">
             <div class="card card-4">
                 <div class="card-body">

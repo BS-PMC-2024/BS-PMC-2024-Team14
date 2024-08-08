@@ -1,12 +1,18 @@
 {% extends "layout.html" %}
 
 
-
+{% block title %}
+ student Dashboard 
+{% endblock %}
 {% load static %}
 {% block content %}
 
+<br/>
+<h1 style="color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">  Welcome!</h1>
+<br/>
 
 
+<head>
     <!-- Favicon -->
     <link href={% static "img/favicon.ico" %} rel="icon">
 
@@ -32,16 +38,38 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+<style>
+    body{
+        background: #9053c7;
+    background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: linear-gradient(-135deg, #c850c0, #4158d0);
 
-<body style="background-color: blueviolet;" >
+    }
+</style>
+</head>
+<body >
    
 
-    
-
-        <div style="justify-content: center; align-items: center; display:flex; margin-top: 50px; ">
-                            
-            <h2 style="color:white;">CodeForU - a platform for learning code programming using AI</h2>
+    <section id="banner_parallax" class="slide_banner1">
+        <div class="container">
+           <div class="row">
+              <div class="col-md-12">
+                 <div class="full">
+                    <div class="slide_cont">
+                       <h2>CodeForU - a platform for learning code programming using AI</h2>
+                    </div>
+                 </div>
+              </div>
+              <div class="col-md-6">
+                <div class="slide_pc_img wow fadeInRight" data-wow-delay="0.5s" data-wow-duration="1s"> 
+                 
+                 </div>
+              </div>
+           </div>
         </div>
+     </section>
 
     <!-- Carousel End -->
 
@@ -125,7 +153,7 @@
                             <p class="mb-0" style="color: white;"><i class="fa fa-arrow-right text-primary me-2"></i>Learning anywhere and anytime</p>
                         </div>
                     </div>
-                    <a class="btn btn-primary py-3 px-5 mt-2" href="">Sign Up Now</a>
+                   
                 </div>
             </div>
         </div>
@@ -151,14 +179,14 @@
                   <div class="row">
                     <div class="col-12">
                       <div class="count-area-content percentage">
-                        <div class="count-digit">5000</div>
+                        <div class="count-digit">100</div>
                         <div class="count-title">Succesed Students</div>
                       </div>
                     </div>
                     <div class="col-12">
                       <div class="count-area-content">
                         <div class="count-digit">126</div>
-                        <div class="count-title">Current Teachers</div>
+                        <div class="count-title">Current Mentors</div>
                       </div>
                     </div>
                   </div>
@@ -203,8 +231,8 @@
                         </div>
                       
                         <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
+                            <h5 class="mb-0">Shay Moshe</h5>
+                            <small>Mentor</small>
                         </div>
                     </div>
                 </div>
@@ -215,8 +243,8 @@
                         </div>
                       
                         <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
+                            <h5 class="mb-0">Amit Golan</h5>
+                            <small>Mentor</small>
                         </div>
                     </div>
                 </div>
@@ -227,8 +255,8 @@
                         </div>
                         
                         <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
+                            <h5 class="mb-0">Lior Azulay</h5>
+                            <small>Mentor</small>
                         </div>
                     </div>
                 </div>
@@ -239,8 +267,8 @@
                         </div>
                       
                         <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
+                            <h5 class="mb-0">Dana Cohen</h5>
+                            <small>Mentor</small>
                         </div>
                     </div>
                 </div>
@@ -260,34 +288,34 @@
             <div class="owl-carousel testimonial-carousel position-relative">
                 <div class="testimonial-item text-center">
                     <img class="border rounded-circle p-2 mx-auto mb-3" src={% static "img/testimonial-1.jpg" %} style="width: 80px; height: 80px;">
-                    <h5 class="mb-0">Client Name</h5>
-                    <p>Profession</p>
+                    <h5 class="mb-0">May Cohen</h5>
+                    <p>Computer Science Student</p>
                     <div class="testimonial-text bg-light text-center p-4">
-                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                    <p class="mb-0">“Your platform is one of the best tools I have learned from so far. The combination of AI and mentors creates an interactive and inspiring learning experience. The mentors were professional and supportive, and the automated tools you provided helped me understand and improve quickly. Thank you for the support!”</p>
                     </div>
                 </div>
                 <div class="testimonial-item text-center">
                     <img class="border rounded-circle p-2 mx-auto mb-3" src={% static "img/testimonial-2.jpg" %} style="width: 80px; height: 80px;">
-                    <h5 class="mb-0">Client Name</h5>
-                    <p>Profession</p>
+                    <h5 class="mb-0">Or Levy</h5>
+                    <p>Software Engineering Student</p>
                     <div class="testimonial-text bg-light text-center p-4">
-                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                    <p class="mb-0">“Your system offers a high-level learning experience with excellent flexibility. The AI-based platform helped me quickly overcome coding issues, and the support from mentors was always available and helpful. I felt that whenever I faced a problem, I had someone to assist me. Kudos for the excellent work!”</p>
                     </div>
                 </div>
                 <div class="testimonial-item text-center">
                     <img class="border rounded-circle p-2 mx-auto mb-3" src={% static "img/testimonial-3.jpg" %} style="width: 80px; height: 80px;">
-                    <h5 class="mb-0">Client Name</h5>
-                    <p>Profession</p>
+                    <h5 class="mb-0">Daniel Ramon</h5>
+                    <p> Information Systems Student</p>
                     <div class="testimonial-text bg-light text-center p-4">
-                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                    <p class="mb-0">“Your service provides an amazing learning experience. The integration of AI with personal mentor support is a great solution that yields excellent results. I find it easier to understand complex concepts and tackle new challenges. Thanks for the investment and quality!”</p>
                     </div>
                 </div>
                 <div class="testimonial-item text-center">
                     <img class="border rounded-circle p-2 mx-auto mb-3" src={% static "img/testimonial-4.jpg" %} style="width: 80px; height: 80px;">
-                    <h5 class="mb-0">Client Name</h5>
+                    <h5 class="mb-0">Rotem Gal</h5>
                     <p>Profession</p>
                     <div class="testimonial-text bg-light text-center p-4">
-                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                    <p class="mb-0">“I couldn’t ask for more! The platform offers a wide range of learning tools tailored to my needs. The support from mentors exceeded my expectations and helped me grasp topics that are usually difficult for me to learn on my own. The AI helps me develop coding skills much faster. I highly recommend the platform!”</p>
                     </div>
                 </div>
             </div>
@@ -300,25 +328,29 @@
     <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container py-5">
             <div class="row g-5">
+              
                 <div class="col-lg-4 col-md-6">
-                    <h4 class="text-white mb-3">Quick Link</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Privacy Policy</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">FAQs & Help</a>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <h4 class="text-white mb-3">Contact</h4>
+                    <h4 class="text-white mb-3">Contact Us! </h4>
                     <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Sami Shamoon, Beer Sheva, ISRAEL</p>
                     <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
                     <p class="mb-2"><i class="fa fa-envelope me-3"></i>CodeForU@gmail.com</p>
                    
-                    <br/>
-                    <br/>
+                 
+                  
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <h4 class="text-white mb-3">Newsletter</h4>
+                    <p>subscribe for updates!</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                    </div>
+                </div>
 
-                    
-                    <h4 class="text-white mb-3">Rate Us!</h4>
+                <div class="col-lg-4 col-md-6">
+
+                <h4 class="text-white mb-3">Rate Us!</h4>
                     <form method="post" action="{% url 'users:student_feedback' %}">
                         {% csrf_token %}
                         <div class="star-rating">
@@ -341,17 +373,8 @@
                             <button type="submit" class="upload-button">Submit</button>
                         </div>
                     </form>
-                  
                 </div>
-                
-                <div class="col-lg-4 col-md-6">
-                    <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
-                </div>
+
             </div>
         </div>
       
@@ -405,11 +428,7 @@
     }
 
 
-/* 
-    function uploadData() {
-    // כאן תוכל להוסיף את הקוד שלך להעלאת הנתונים לבסיס
-    alert('Data has been uploaded successfully!');
-} */
+
     </script>
 
     
