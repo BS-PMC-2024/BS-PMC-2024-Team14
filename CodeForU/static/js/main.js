@@ -148,7 +148,22 @@ function videoPopup() {
     });
 
 
-   
+   function handleUniqueFormIds() {
+     // Example: Handling a click on the mentor rating radio buttons
+     $('[id^="mentor_star"]').on("change", function () {
+       let selectedValue = $(this).val();
+       console.log("Mentor rating selected:", selectedValue);
+     });
+
+     // Similar logic can be added for the other form if needed
+     $('[id^="star"]').on("change", function () {
+       let selectedValue = $(this).val();
+       console.log("Student rating selected:", selectedValue);
+     });
+   }
+
+   // Initialize the unique form ID handlers
+   handleUniqueFormIds();
     
 })(jQuery);
 

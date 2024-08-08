@@ -324,16 +324,12 @@
                         <div class="star-rating">
                             <input type="radio" id="star5" name="rating" value="5" {% if student.rating == 5 %}checked{% endif %} />
                             <label for="star5" title="5 stars"></label>
-                            
                             <input type="radio" id="star4" name="rating" value="4" {% if student.rating == 4 %}checked{% endif %} />
                             <label for="star4" title="4 stars"></label>
-                            
                             <input type="radio" id="star3" name="rating" value="3" {% if student.rating == 3 %}checked{% endif %} />
                             <label for="star3" title="3 stars"></label>
-                            
                             <input type="radio" id="star2" name="rating" value="2" {% if student.rating == 2 %}checked{% endif %} />
                             <label for="star2" title="2 stars"></label>
-                            
                             <input type="radio" id="star1" name="rating" value="1" {% if student.rating == 1 %}checked{% endif %} />
                             <label for="star1" title="1 star"></label>
                         </div>
@@ -341,17 +337,28 @@
                             <button type="submit" class="upload-button">Submit</button>
                         </div>
                     </form>
-                  
-                </div>
+                </div><div class="col-lg-4 col-md-6">
+                    <h4 class="text-white mb-3">Rate Your Mentor!</h4>
+                    <form method="post" action="{% url 'users:student_feedback' %}">
+                        {% csrf_token %}
+                        <div class="star-rating-mentor">
+                            <input type="radio" id="mentor_star5" name="mentor_rating" value="5" {% if student.mentor_rating == 5 %}checked{% endif %} />
+                            <label for="mentor_star5" title="5 stars"></label>
+                            <input type="radio" id="mentor_star4" name="mentor_rating" value="4" {% if student.mentor_rating == 4 %}checked{% endif %} />
+                            <label for="mentor_star4" title="4 stars"></label>
+                            <input type="radio" id="mentor_star3" name="mentor_rating" value="3" {% if student.mentor_rating == 3 %}checked{% endif %} />
+                            <label for="mentor_star3" title="3 stars"></label>
+                            <input type="radio" id="mentor_star2" name="mentor_rating" value="2" {% if student.mentor_rating == 2 %}checked{% endif %} />
+                            <label for="mentor_star2" title="2 stars"></label>
+                            <input type="radio" id="mentor_star1" name="mentor_rating" value="1" {% if student.mentor_rating == 1 %}checked{% endif %} />
+                            <label for="mentor_star1" title="1 star"></label>
+                        </div>
+                        <div class="upload-container">
+                            <button type="submit" class="upload-button">Submit</button>
+                        </div>
+                    </form>
+        </div>
                 
-                <div class="col-lg-4 col-md-6">
-                    <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
-                </div>
             </div>
         </div>
       

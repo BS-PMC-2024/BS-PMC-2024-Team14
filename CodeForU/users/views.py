@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from .models import User
 
 from .decorators import mentor_required, student_required
 from .forms import (
@@ -15,7 +14,7 @@ from .forms import (
     StudentMentorRequestForm,
     UserRegistrationForm,
 )
-from .models import HelpRequest, Mentor, Question, Student, StudentMentorRequest
+from .models import HelpRequest, Mentor, Question, Student, StudentMentorRequest, User
 
 
 def get_mentor_ids():
@@ -32,6 +31,7 @@ def get_mentor_ids():
         "0123456789",
         # Add more fake IDs as needed
     ]
+
 
 def login_view(request):
     if request.method == "POST":
@@ -51,8 +51,8 @@ def login_view(request):
                     mentor = Mentor.objects.get(user_ptr_id=user.id)
                     if not mentor.is_approved:
                         messages.error(request, "Your account is not approved yet.")
-                        return redirect("users:login")  
-                    messages.success(request,"")
+                        return redirect("users:login")
+                    messages.success(request, "")
                     return redirect("users:transition_men")
                 except Mentor.DoesNotExist:
                     pass
@@ -76,19 +76,20 @@ def login_view(request):
             email = form.cleaned_data.get("username")
             curr_user = None
             try:
-                curr_user =  User.objects.get(email=email) 
+                curr_user = User.objects.get(email=email)
             except Exception:
                 curr_user = None
             if not curr_user:
-                    messages.error(request, "Email does not exist.")
+                messages.error(request, "Email does not exist.")
             else:
-                    messages.error(request, "Password does not match the email.")
+                messages.error(request, "Password does not match the email.")
             # messages.error(request,form.errors)
             # print("Form is not valid:", )
     else:
         form = CustomAuthenticationForm()
 
     return render(request, "login.html", {"form": form})
+
 
 def register_view(request):
     mentor_ids = get_mentor_ids()  # Assuming you have a function to get mentor IDs
@@ -132,12 +133,13 @@ def register_view(request):
                 student.set_password(form.cleaned_data["password"])
                 student.save()
 
-            messages.success(request, "Registration successful.")
+            # messages.success(request, "Registration successful.")
             return redirect("users:login")
         else:
-            messages.error(
-                request, "Registration failed. Please correct the errors below."
-            )
+            print("Registration failed. Please correct the errors below.")
+            # messages.error(
+            #     request, "Registration failed. Please correct the errors below."
+            # )
     else:
         form = UserRegistrationForm()
 
@@ -152,11 +154,11 @@ def mentor_dashboard(request):
 @login_required(login_url="/users/login")
 @student_required
 def student_dashboard(request):
-    student = Student.objects.get(user_ptr_id=request.user.id )
+    student = Student.objects.get(user_ptr_id=request.user.id)
 
     print(f"user id:{request.user.id}")
     print(student)
-    return render(request, "student_dashboard.html" , {"student":student})
+    return render(request, "student_dashboard.html", {"student": student})
 
 
 def transition_stu(request):
@@ -384,16 +386,59 @@ def delete_student_mentor_request(request, request_id):
         return redirect(reverse("users:student_mentor_request"))
     return render(request, "student_mentor_request.html")
 
+
+# @student_required
+# def student_feedback(request):
+#     if request.method == "POST":
+#         rating = request.POST.get("rating")
+#         user = request.user
+
+#         if user.is_student:
+#             student = Student.objects.get(id=user.id)
+#             student.rating = int(rating)
+#             student.save()
+#             return redirect(
+#                 reverse("users:student_dashboard")
+#             )  # Redirect to a success page or any other page
+
+#     return redirect(reverse("users:student_dashboard"))
+
+
+# @student_required
+# def student_feedback_mentor(request):
+#     if request.method == "POST":
+#         mentor_rating = request.POST.get("mentor_rating")
+#         user = request.user
+
+#         if user.is_student:
+#             student = Student.objects.get(id=user.id)
+#             student.mentor_rating = int(mentor_rating)
+#             student.save()
+#             return redirect(
+#                 reverse("users:student_dashboard")
+#             )  # Redirect to a success page or any other page
+
+#     return redirect(reverse("users:student_dashboard"))
+
+
 @student_required
 def student_feedback(request):
-    if request.method == 'POST':
-        rating = request.POST.get('rating')
-        user = request.user
+    user = request.user
 
-        if user.is_student:
-            student = Student.objects.get(id=user.id)
-            student.rating = int(rating)
+    if user.is_student:
+        student = Student.objects.get(id=user.id)
+
+        if request.method == "POST":
+            if "rating" in request.POST:
+                # Handle the "Rate Us" form submission
+                rating = request.POST.get("rating")
+                student.rating = int(rating)
+            elif "mentor_rating" in request.POST:
+                # Handle the "Rate Your Mentor" form submission
+                mentor_rating = request.POST.get("mentor_rating")
+                student.mentor_rating = int(mentor_rating)
+
             student.save()
-            return redirect(reverse('users:student_dashboard'))  # Redirect to a success page or any other page
+            return redirect(reverse("users:student_dashboard"))
 
-    return redirect(reverse('users:student_dashboard'))
+    return redirect(reverse("users:student_dashboard"))
