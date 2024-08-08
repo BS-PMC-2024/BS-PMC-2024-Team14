@@ -1,18 +1,16 @@
 {% extends "layout.html" %}
 {% load bootstrap5 %}
-
+{% load static%}
 
 {%block content%}
-<h1>Home Page</h1>
 
-{% endblock %}
 <br/>
 <h1 style="color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">  Welcome!</h1>
 <br/>
 
 <head>
     <!-- Favicon -->
-    <link href={% static "img/favicon.ico" %} rel="icon">
+    <link href={%static "img/favicon.ico" %} rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
