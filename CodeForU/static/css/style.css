@@ -1,3 +1,4 @@
+
 html,
 body {
     color: #898989;
@@ -568,6 +569,43 @@ body {
 
 .star-rating input:hover ~ label,
 .star-rating label:hover ~ label {
+  color: #f5c518;
+}
+
+
+.star-rating-mentor {
+  direction: rtl;
+  display: inline-block;
+  font-size: 0;
+  position: relative;
+}
+
+.star-rating-mentor input {
+  display: none;
+}
+
+.star-rating-mentor label {
+  font-size: 20px;
+  letter-spacing: 10px;
+  color: #ccc;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+}
+
+.star-rating-mentor label:before {
+  content: "★";
+  font-family: FontAwesome;
+  position: relative;
+  font-size: 2em;
+}
+
+.star-rating-mentor input:checked ~ label {
+  color: #f5c518;
+}
+
+.star-rating-mentor input:hover ~ label,
+.star-rating-mentor label:hover ~ label {
   color: #f5c518;
 }
 
@@ -1901,3 +1939,4 @@ input {
         align-items: center; /* יישור אנכי */
         justify-content: center; /* יישור אופקי */
     }
+

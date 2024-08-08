@@ -526,23 +526,20 @@ class StudentMentorRequestAndViewTest(TestCase):
         self.assertContains(response, "Test Message")
 
 
-
-
-
 class StudentFeedbackViewTests(TestCase):
 
     def setUp(self):
         self.client = Client()
         # Create a student user
         self.student_user = User.objects.create_user(
-            email='student@example.com',
-            password='password123A@',
-            first_name='John',
-            last_name='Doe',
-            phone='1234567890',
-            birth_date='2000-01-01',
-            passport_id='A12345678',
-            gender='Male',
+            email="student@example.com",
+            password="password123A@",
+            first_name="John",
+            last_name="Doe",
+            phone="1234567890",
+            birth_date="2000-01-01",
+            passport_id="A12345678",
+            gender="Male",
         )
         # Assign the user as a student
         self.student = Student.objects.create(
@@ -555,14 +552,14 @@ class StudentFeedbackViewTests(TestCase):
             passport_id=self.student_user.passport_id,
             gender=self.student_user.gender,
             level=1,
-            rating=3
+            rating=3,
         )
         # Log the student in
         self.client.force_login(self.student)
-        self.url = reverse('users:student_feedback')
+        self.url = reverse("users:student_feedback")
 
     def test_student_feedback_post(self):
-        response = self.client.post(self.url, {'rating': 5})
+        response = self.client.post(self.url, {"rating": 5})
         self.student.refresh_from_db()
         self.assertEqual(response.status_code, 302)  # Check for redirect status code
         self.assertEqual(self.student.rating, 5)  # Check if the rating was updated
@@ -571,4 +568,14 @@ class StudentFeedbackViewTests(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)  # Check for redirect status code
 
+    def test_student_mentor_rating_post(self):
+        response = self.client.post(self.url, {"mentor_rating": 5})
+        self.student.refresh_from_db()
+        self.assertEqual(response.status_code, 302)  # Check for redirect status code
+        self.assertEqual(
+            self.student.mentor_rating, 5
+        )  # Check if the rating was updated
 
+    def test_student_mentor_rating_get_request(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)  # Check for redirect status code
