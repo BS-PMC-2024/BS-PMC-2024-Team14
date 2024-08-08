@@ -12,6 +12,8 @@ from users.tests import (
     RegisterViewTests,
     StudentMentorRequestAndViewTest,
     StudentProfileTests,
+    StudentDashboardViewTests,
+    StudentFeedbackViewTests
 )
 
 
@@ -28,6 +30,8 @@ def suite():
     )
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(QuestionsListViewTests))
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(QuestionModelTests))
+        suite.addTests(unittest.TestLoader().loadTestsFromTestCase(StudentDashboardViewTests))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(StudentFeedbackViewTests))
     return suite
 
 

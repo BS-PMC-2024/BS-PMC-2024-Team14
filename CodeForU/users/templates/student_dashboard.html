@@ -368,7 +368,32 @@
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-
+    {% if student.level_updated %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                var congratsMessage = "Congrats! Now you are level {{ student.level }}";
+                if (confirm(congratsMessage)) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'users:reset_level_updated' %}",
+                        data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                        },
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                console.log('Level updated reset.');
+                            }
+                        },
+                        error: function (response) {
+                            console.log('Failed to reset level updated.');
+                        }
+                    });
+                }
+            }, 1000);  // 2000 milliseconds = 2 seconds
+        });
+    </script>
+    {% endif %}
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

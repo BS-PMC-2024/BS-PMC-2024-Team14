@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.http import JsonResponse
+from unittest.mock import patch
 
 from .models import HelpRequest, Mentor, Question, Student, StudentMentorRequest, User
 
@@ -579,3 +581,49 @@ class StudentFeedbackViewTests(TestCase):
     def test_student_mentor_rating_get_request(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)  # Check for redirect status code
+
+
+
+
+
+class StudentDashboardViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.student = User.objects.create_user(
+            email="student@example.com",
+            password="password123A@",
+            first_name="John",
+            last_name="Doe",
+            phone="1234567890",
+            birth_date="2000-01-01",
+            passport_id="A12345678",
+            gender="Male",
+        )
+        self.student.is_active = True
+        self.student.save()
+
+        self.student_profile = Student.objects.create(
+            id=self.student.id,
+            email=self.student.email,
+            first_name=self.student.first_name,
+            last_name=self.student.last_name,
+            phone=self.student.phone,
+            birth_date=self.student.birth_date,
+            passport_id=self.student.passport_id,
+            gender=self.student.gender,
+            level=1,
+            mentor_responsible=None,
+            rating=5,
+            mentor_rating=5,
+            level_updated=True
+        )
+        self.student_profile.save()
+
+        self.client.login(email='student@example.com', password='password123A@')
+
+    def test_student_dashboard_resets_level_updated(self):
+        response = self.client.get(reverse('users:student_dashboard'))
+        self.student_profile.refresh_from_db()
+        self.assertNotEqual(response.status_code, 200)
+        self.assertTrue(self.student_profile.level_updated)
+

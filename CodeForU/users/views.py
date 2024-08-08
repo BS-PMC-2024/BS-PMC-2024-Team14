@@ -3,7 +3,7 @@ import random
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -172,7 +172,7 @@ def transition_men(request):
 @login_required(login_url="/users/login")
 def mentor_studentlist(request):
     # Query all students from the database
-    students = Student.objects.all()
+    students = Student.objects.filter(mentor_responsible=request.user.id)
 
     # Pass the student list to the template context
     context = {"students": students}
@@ -387,40 +387,6 @@ def delete_student_mentor_request(request, request_id):
     return render(request, "student_mentor_request.html")
 
 
-# @student_required
-# def student_feedback(request):
-#     if request.method == "POST":
-#         rating = request.POST.get("rating")
-#         user = request.user
-
-#         if user.is_student:
-#             student = Student.objects.get(id=user.id)
-#             student.rating = int(rating)
-#             student.save()
-#             return redirect(
-#                 reverse("users:student_dashboard")
-#             )  # Redirect to a success page or any other page
-
-#     return redirect(reverse("users:student_dashboard"))
-
-
-# @student_required
-# def student_feedback_mentor(request):
-#     if request.method == "POST":
-#         mentor_rating = request.POST.get("mentor_rating")
-#         user = request.user
-
-#         if user.is_student:
-#             student = Student.objects.get(id=user.id)
-#             student.mentor_rating = int(mentor_rating)
-#             student.save()
-#             return redirect(
-#                 reverse("users:student_dashboard")
-#             )  # Redirect to a success page or any other page
-
-#     return redirect(reverse("users:student_dashboard"))
-
-
 @student_required
 def student_feedback(request):
     user = request.user
@@ -442,3 +408,20 @@ def student_feedback(request):
             return redirect(reverse("users:student_dashboard"))
 
     return redirect(reverse("users:student_dashboard"))
+
+@student_required
+def reset_level_updated(request):
+    if request.method == 'POST':
+        student = request.user.student
+        student.level_updated = False
+        student.save()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'failed'}, status=400)
+
+@mentor_required
+def level_up_view(request, student_id):
+    student = Student.objects.get(id=student_id)
+    student.level = student.level+1
+    student.level_updated = True
+    student.save()
+    return redirect("users:mentor_studentlist")
