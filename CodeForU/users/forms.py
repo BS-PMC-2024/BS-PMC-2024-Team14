@@ -200,3 +200,49 @@ class StudentMentorRequestForm(forms.ModelForm):
                 }
             ),
         }
+
+
+
+class EmailForm(forms.Form):
+    email = forms.EmailField()
+
+class CodeVerificationForm(forms.Form):
+    code = forms.CharField(max_length=4, required=True)
+
+
+class SetNewPasswordForm(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput, label="New Password")
+    confirm_password = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
+
+    def clean_new_password(self):
+        password = self.cleaned_data.get("new_password")
+        if not any(char.isdigit() for char in password):
+            raise forms.ValidationError("Password must contain at least one digit.")
+        if not any(char.isupper() for char in password):
+            raise forms.ValidationError("Password must contain at least one uppercase letter.")
+        if not any(char in "!@#$%^&*" for char in password):
+            raise forms.ValidationError("Password must contain at least one special character.")
+        if len(password) < 8:
+            raise forms.ValidationError("Password must be at least 8 characters long.")
+        return password
+
+    def clean_confirm_password(self):
+        password = self.cleaned_data.get("new_password")
+        confirm_password = self.cleaned_data.get("confirm_password")
+
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Oops, Passwords do not match. Please try again.")
+
+        return confirm_password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("new_password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Oops, Passwords do not match. Please try again.")
+        return cleaned_data
+
+
+    

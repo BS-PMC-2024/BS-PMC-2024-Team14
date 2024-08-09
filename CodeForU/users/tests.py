@@ -627,3 +627,107 @@ class StudentDashboardViewTests(TestCase):
         self.assertNotEqual(response.status_code, 200)
         self.assertTrue(self.student_profile.level_updated)
 
+
+from django.core import mail
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
+from .forms import EmailForm, CodeVerificationForm, SetNewPasswordForm
+
+class PasswordResetTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+        # Create test users
+        self.student_user = User.objects.create_user(
+            email="student@example.com",
+            first_name="Student",
+            last_name="User",
+            phone="1234567890",
+            birth_date="2000-01-01",
+            passport_id="123456789",
+            gender="Male",
+            password="password123",
+        )
+        self.student = Student.objects.create(
+            id=self.student_user.id,
+            email=self.student_user.email,
+            first_name=self.student_user.first_name,
+            last_name=self.student_user.last_name,
+            phone=self.student_user.phone,
+            birth_date=self.student_user.birth_date,
+            passport_id=self.student_user.passport_id,
+            gender=self.student_user.gender,
+            level=5,
+        )
+
+        self.mentor_user = User.objects.create_user(
+            email="mentor@example.com",
+            first_name="Mentor",
+            last_name="User",
+            phone="1234567890",
+            birth_date="1985-01-01",
+            passport_id="987654321",
+            gender="Female",
+            password="password123",
+        )
+        self.mentor = Mentor.objects.create(
+            id=self.mentor_user.id,
+            email=self.mentor_user.email,
+            first_name=self.mentor_user.first_name,
+            last_name=self.mentor_user.last_name,
+            phone=self.mentor_user.phone,
+            birth_date=self.mentor_user.birth_date,
+            passport_id=self.mentor_user.passport_id,
+            gender=self.mentor_user.gender,
+            is_approved=True
+        )
+
+    def test_password_reset_request_view_get(self):
+        response = self.client.get(reverse('users:password_reset'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'password_reset_email.html')
+        self.assertIsInstance(response.context['form'], EmailForm)
+
+    def test_password_reset_request_view_post_valid_email(self):
+        response = self.client.post(reverse('users:password_reset'), {'email': self.student_user.email})
+        self.assertEqual(response.status_code, 302)  # Redirect after successful email send
+        self.assertEqual(len(mail.outbox), 1)  # Check if email is sent
+        self.assertRedirects(response, reverse('users:verify_code'))
+
+    def test_password_reset_request_view_post_invalid_email(self):
+        response = self.client.post(reverse('users:password_reset'), {'email': 'invalid@example.com'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'password_reset_email.html')
+
+
+    def test_code_verification_view_get(self):
+        response = self.client.get(reverse('users:verify_code'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'password_reset_code.html')
+        self.assertIsInstance(response.context['form'], CodeVerificationForm)
+
+    def test_code_verification_view_post_valid_code(self):
+        self.client.session['reset_code'] = '1234'
+        self.client.session.save()
+        response = self.client.post(reverse('users:verify_code'), {'code': '1234'})
+        self.assertEqual(response.status_code, 200)
+        
+
+    def test_code_verification_view_post_invalid_code(self):
+        self.client.session['reset_code'] = '1234'
+        self.client.session.save()
+        response = self.client.post(reverse('users:verify_code'), {'code': '0000'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'password_reset_code.html')
+
+    def test_set_new_password_view_get(self):
+        response = self.client.get(reverse('users:set_new_password'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'set_new_password.html')
+        self.assertIsInstance(response.context['form'], SetNewPasswordForm)
+
+  
+
+

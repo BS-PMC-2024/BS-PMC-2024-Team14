@@ -144,3 +144,31 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
+
+# # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# # EMAIL_BACKEND = 'users.CustomEmailBackend'
+
+
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# # EMAIL_HOST_USER = 'lidorfeldman2121@gmail.com'
+# # EMAIL_HOST_PASSWORD = '209297035Kurland2309@'
+# # DEFAULT_FROM_EMAIL = 'lidorfeldman2121@gmail.com'
+
+# EMAIL_HOST_USER = 'codeforu14@gmail.com'
+# # EMAIL_HOST_PASSWORD = 'Project14@'
+# EMAIL_HOST_PASSWORD = 'pkrs xcfv ibom lcxc'
+
+# settings.py
+
+EMAIL_BACKEND = 'users.custom_email_backend.CustomEmailBackend'  # Update with the correct path
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'codeforu14@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'pkrs xcfv ibom lcxc'  # Replace with your Gmail App Password
+DEFAULT_FROM_EMAIL = 'codeforu14@gmail.com'  # Optional
+
+

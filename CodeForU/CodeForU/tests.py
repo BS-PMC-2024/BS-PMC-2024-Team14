@@ -30,7 +30,7 @@ def suite():
     )
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(QuestionsListViewTests))
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(QuestionModelTests))
-        suite.addTests(unittest.TestLoader().loadTestsFromTestCase(StudentDashboardViewTests))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(StudentDashboardViewTests))
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(StudentFeedbackViewTests))
     return suite
 
