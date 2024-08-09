@@ -43,4 +43,8 @@ urlpatterns = [
     path("student_feedback/",views.student_feedback,name="student_feedback"),
     path('reset_level_updated/', views.reset_level_updated, name='reset_level_updated'),
     path('level_up/<int:student_id>/', views.level_up_view, name='level_up'),
+    path('password_reset/', views.PasswordResetRequestView.as_view(), name='password_reset'),
+    path('password_reset/verify/', views.CodeVerificationView.as_view(), name='verify_code'),
+    path('password_reset/set_new_password/', views.SetNewPasswordView.as_view(), name='set_new_password'),
+    
 ]
