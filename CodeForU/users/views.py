@@ -157,8 +157,12 @@ def register_view(request):
 
 
 @login_required(login_url="/users/login")
+@mentor_required
 def mentor_dashboard(request):
-    return render(request, "mentor_dashboard.html")
+    mentor = Mentor.objects.get(user_ptr_id=request.user.id )
+    print(f"user id:{request.user.id}")
+    print(mentor)
+    return render(request, "mentor_dashboard.html" , {"mentor":mentor})
 
 
 @login_required(login_url="/users/login")

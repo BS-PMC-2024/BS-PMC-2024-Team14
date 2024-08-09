@@ -1,4 +1,3 @@
-
 html,
 body {
     color: #898989;
@@ -210,7 +209,7 @@ body {
 }
 
 .page-header {
-    background: blueviolet;
+    background-color: blueviolet;
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -572,7 +571,6 @@ body {
   color: #f5c518;
 }
 
-
 .star-rating-mentor {
   direction: rtl;
   display: inline-block;
@@ -612,8 +610,6 @@ body {
 
 
 
-
-
 .slide_cont {
     float: left;
     width: 100%;
@@ -644,7 +640,7 @@ body {
 }
 
 .slide_banner1 {
-    background-image: url('../img/imgindex.webp');
+    background-image: url('../img/img5.webp');
     min-height: 450px;
     position:relative;
     background-repeat: no-repeat;
@@ -1341,15 +1337,19 @@ button {
    #PAGE WRAPPER
    ========================================================================== */
    .page-wrapper {
-    height: auto;
+    background-color: transparent;
+
     min-height: 100vh; /* שימוש במינימום גובה במקום גובה מוחלט */
 }
 
 .wrapper {
+  background-color: transparent;
     height: auto;
 }
 
 .card {
+  background-color: transparent;
+
     height: auto;
 }
 
@@ -1413,7 +1413,7 @@ h6 {
 }
 
 .bg-gra-02 {
-  background: -webkit-gradient(linear, left bottom, right top, from(#fc2c77), to(#6c4079));
+  background: #9053c7;
   background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
   background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
   background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
@@ -1837,6 +1837,7 @@ input {
   color: #525252;
   font-weight: 400;
   margin-bottom: 40px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* ==========================================================================
@@ -1932,6 +1933,7 @@ input {
         display: inline-flex; /* מאפשר שימוש בתכונת align-items */
         align-items: center; /* מיישר את התוכן במרכז האנכי */
         justify-content: center; /* מיישר את התוכן במרכז האופקי */
+      
     }
     
     .btn {
@@ -1939,4 +1941,3 @@ input {
         align-items: center; /* יישור אנכי */
         justify-content: center; /* יישור אופקי */
     }
-
