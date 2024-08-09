@@ -30,6 +30,14 @@ Questions List
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
+        body{
+        background: #9053c7;
+        background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
+        background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
+        background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
+        background: linear-gradient(-135deg, #c850c0, #4158d0);
+
+    }
 .h1{
 color: white;       
 }
@@ -52,9 +60,7 @@ color: white;
 .number-btn:hover {
 background-color: darkgray;
 }
-</style>
 
-<style>
 /* סגנונות לכפתור */
 .unique-btn {
 display: inline-flex; /* מציב את המלל והאייקון באותו קו */
@@ -83,9 +89,6 @@ transition: background-color 0.3s; /* שינוי צבע חלק */
 font-size: 1em; /* גובה האייקון יהיה מותאם לפי גובה הכתב */
 line-height: 1; /* מוודא שהאייקון מתיישר בצורה נכונה */
 }
-</style>
-<style>
-
 
 .question-container:hover {
 background-color: white; /* או אותו צבע רקע כמו במצב הרגיל */
@@ -96,22 +99,14 @@ background-color: inherit; /* או אותו צבע רקע כמו במצב הרג
 .question-item {
 background-color: inherit; /* או אותו צבע רקע כמו במצב הרגיל */
 }
-</style>
 
-<style>
-body{
-background: #9053c7;
-background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
-background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
-background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
-background: linear-gradient(-135deg, #c850c0, #4158d0);
-
-}
 </style>
-<div class="main-container">
-    <div class="pd-ltr-20 xs-pd-20-10">
-        <div class="min-height-200px">
-            <div class="row">
+<body>
+    
+    <div class="main-container" style="margin-top:100px;">
+        <div class="pd-ltr-20 xs-pd-20-10">
+            <div class="min-height-200px">
+                <div class="row">
                 <div class="col-sm-12 mb-30">
                     <div class="card-box height-100-p overflow-hidden">
                         <div class="profile-tab height-100-p">
@@ -126,7 +121,7 @@ background: linear-gradient(-135deg, #c850c0, #4158d0);
                                                     <div class="col-md-8 col-sm-12">
                                                         <br/>
                                                         <br/>
-
+                                                        
                                                         <div class="task-type" style="color: white; font-size: xx-large; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Open Questions: </div>
                                                     </div>
                                                 </div>
@@ -136,41 +131,41 @@ background: linear-gradient(-135deg, #c850c0, #4158d0);
                                                         <br/>
                                                         <div class="number-buttons mb-15">
                                                             {% if user_level is not None %}
-                                                                <button type="button" class="btn number-btn" data-level="1" {% if user_level < 1 %}disabled{% endif %}>1</button>
-                                                                <button type="button" class="btn number-btn" data-level="2" {% if user_level < 2 %}disabled{% endif %}>2</button>
-                                                                <button type="button" class="btn number-btn" data-level="3" {% if user_level < 3 %}disabled{% endif %}>3</button>
+                                                            <button type="button" class="btn number-btn" data-level="1" {% if user_level < 1 %}disabled{% endif %}>1</button>
+                                                            <button type="button" class="btn number-btn" data-level="2" {% if user_level < 2 %}disabled{% endif %}>2</button>
+                                                            <button type="button" class="btn number-btn" data-level="3" {% if user_level < 3 %}disabled{% endif %}>3</button>
                                                                 <button type="button" class="btn number-btn" data-level="4" {% if user_level < 4 %}disabled{% endif %}>4</button>
                                                                 <button type="button" class="btn number-btn" data-level="5" {% if user_level < 5 %}disabled{% endif %}>5</button>
-                                                            {% else %}
+                                                                {% else %}
                                                                 <button type="button" class="btn number-btn" data-level="1">1</button>
                                                                 <button type="button" class="btn number-btn" data-level="2">2</button>
                                                                 <button type="button" class="btn number-btn" data-level="3">3</button>
                                                                 <button type="button" class="btn number-btn" data-level="4">4</button>
                                                                 <button type="button" class="btn number-btn" data-level="5">5</button>
-                                                            {% endif %}
+                                                                {% endif %}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <br/>
-                                                    <ul id="question-list">
+                                                        <br/>
+                                                        <ul id="question-list">
                                                         {% for question in questions %}
-                                                            <li class="question-item" data-level="{{ question.level }}" {% if user_level is not None and question.level > user_level %}style="display:none;"{% endif %}>
-                                                                <div class="question-container">
-                                                                    <h5 style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Que ID: {{ question.id }}</h5>
-                                                                    <br/>
-                                                                    <div class="task-type" style="color: grey; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Level: {{ question.level }}</div>
-                                                                    <div class="task-type" style="color: grey; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" >Submitted by: {{ question.user }}</div>
-                                                                    <div class="task-type" style="color: black; font-size: larger; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Question: {{ question.question_text }}</div>
-                                                                    <div class="task-type" style="color: grey; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Created at: {{ question.created_at }}</div>
-                                                                    <br/>
-                                                                    {% if request.user.is_student %}
-                                                                        <a href="{% url 'users:answer_question' question.id %}" class="unique-btn unique-custom-font unique-btn-primary unique-py-4 unique-px-lg-5 unique-d-none unique-d-lg-block" style="background-color: #8fe7ff;">
-                                                                            Answer Question <i class="fa fa-pencil-square-o unique-icon"></i>
+                                                        <li class="question-item" data-level="{{ question.level }}" {% if user_level is not None and question.level > user_level %}style="display:none;"{% endif %}>
+                                                            <div class="question-container">
+                                                                <h5 style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Question ID: {{ question.id }}</h5>
+                                                                <br/>
+                                                                <div class="task-type" style="color: grey; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Level: {{ question.level }}</div>
+                                                                <div class="task-type" style="color: grey; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" >Submitted by: {{ question.user }}</div>
+                                                                <div class="task-type" style="color: black; font-size: larger; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Question: {{ question.question_text }}</div>
+                                                                <div class="task-type" style="color: grey; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Created at: {{ question.created_at }}</div>
+                                                                <br/>
+                                                                {% if request.user.is_student %}
+                                                                <a href="{% url 'users:answer_question' question.id %}" class="unique-btn unique-custom-font unique-btn-primary unique-py-4 unique-px-lg-5 unique-d-none unique-d-lg-block" style="background-color: #8fe7ff;">
+                                                                    Answer Question <i class="fa fa-pencil-square-o unique-icon"></i>
                                                                         </a>
                                                                     {% endif %}
                                                                 </div>
                                                             </li>
-                                                        {% endfor %}
-                                                    </ul>
+                                                            {% endfor %}
+                                                        </ul>
                                                 </div>
                                                 <!-- Open Task End -->
                                             </div>
@@ -187,16 +182,17 @@ background: linear-gradient(-135deg, #c850c0, #4158d0);
     </div>
 </div>
 
+</body>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const numberButtons = document.querySelectorAll('.number-btn');
         const questionItems = document.querySelectorAll('.question-item');
-
+        
         numberButtons.forEach(button => {
             button.addEventListener('click', function() {
                 numberButtons.forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
-
+                
                 const level = this.getAttribute('data-level');
                 questionItems.forEach(item => {
                     if (item.getAttribute('data-level') === level) {
@@ -207,7 +203,7 @@ background: linear-gradient(-135deg, #c850c0, #4158d0);
                 });
             });
         });
-
+        
         // Initially display questions of level 1 or the first enabled level
         let initialLevel = null;
         numberButtons.forEach(button => {
@@ -216,7 +212,7 @@ background: linear-gradient(-135deg, #c850c0, #4158d0);
                 button.click();
             }
         });
-
+        
         if (initialLevel === null) {
             numberButtons[0].click();
         }

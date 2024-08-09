@@ -6,6 +6,11 @@ body {
     line-height: normal;
     font-weight: 400;
     overflow-x: hidden !important;
+    background: #9053c7;
+    background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: linear-gradient(-135deg, #c850c0, #4158d0);
 }
 
 body {
@@ -209,7 +214,7 @@ body {
 }
 
 .page-header {
-    background-color: blueviolet;
+    background-color: white;
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;

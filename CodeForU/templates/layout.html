@@ -48,50 +48,57 @@
     {% load bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %}
 
     <style>
-      .number-btn {
-        background-color: lightgray;
-        color: black;
-        border: 1px solid #ccc;
-        margin-right: 5px;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        outline: none;
+    body{
+        background: #9053c7;
+        background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
+        background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
+        background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
+        background: linear-gradient(-135deg, #c850c0, #4158d0);
+
+    }
+      .custom-navbar {
+          background: #9053c7;
+          background: -webkit-linear-gradient(-135deg, #c850c0, #bb2fd0);
+          background: -o-linear-gradient(-135deg, #c850c0, #bb2fd0);
+          background: -moz-linear-gradient(-135deg, #c850c0, #bb2fd0);
+          background: linear-gradient(-135deg, #c850c0, #bb2fd0);
+          color: white; /* צבע טקסט לבן */
+      }
+          /* עיצוב לכפתור Logout */
+      .btn-logout {
+          color: white; /* צבע טקסט לבן */
+          border: none; /* ללא מסגרת */
+          border-radius: 4px; /* פינות מעוגלות */
+          transition: background-color 0.3s ease, transform 0.3s ease;
       }
 
-      .number-btn.active {
-        background-color: green;
-        color: white;
+      .btn-logout:hover {
+          background-color: rgb(134, 215, 236); /* צבע רקע כהה יותר בעת מעבר עכבר */
+          transform: scale(1.05); /* הגדלה קלה */
       }
 
-      .number-btn:hover {
-        background-color: darkgray;
+      .btn-logout:active {
+          background-color:  rgb(134, 215, 236); /* צבע רקע כהה יותר בעת לחיצה */
+          transform: scale(1); /* החזרת הכפתור לגודלו המקורי בעת לחיצה */
       }
 
-      .unique-btn {
-        display: inline-flex;
-        align-items: center;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        padding: 5px 10px;
-        text-decoration: none;
+      /* עיצוב לכפתור Login */
+      .btn-login {
+          background-color: rgb(134, 215, 236); /* צבע רקע ירוק */
+          color: white; /* צבע טקסט לבן */
+          border: none; /* ללא מסגרת */
+          border-radius: 4px; /* פינות מעוגלות */
+          transition: background-color 0.3s ease, transform 0.3s ease;
       }
 
-      .unique-btn:hover {
-        background-color: #0056b3;
+      .btn-login:hover {
+          background-color: rgb(134, 215, 236); /* צבע רקע כהה יותר בעת מעבר עכבר */
+          transform: scale(1.05); /* הגדלה קלה */
       }
 
-      .unique-icon {
-        margin-left: 5px;
-        border-radius: 3px;
-        padding: 3px;
-        transition: background-color 0.3s;
-        font-size: 1em;
-        line-height: 1;
+      .btn-login:active {
+          background-color: rgb(134, 215, 236); /* צבע רקע כהה יותר בעת לחיצה */
+          transform: scale(1); /* החזרת הכפתור לגודלו המקורי בעת לחיצה */
       }
 
       .question-container {
@@ -116,18 +123,43 @@
       p {
         margin-top: 10px;
       }
+      .custom-font{
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white; /* צבע טקסט */
+
+      }
+      .custom-button {
+      background-color: inherit; /* צבע רקע */
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+      color: white; /* צבע טקסט */
+      padding: 10px 20px; /* ריווח פנימי */
+      text-align: center; /* יישור טקסט */
+      text-decoration: none; /* ללא קו תחתון */
+      display: inline-block; /* יישור כמו כפתור */
+      font-size: 16px; /* גודל פונט */
+      border-radius: 4px; /* פינות מעוגלות */
+      transition: background-color 0.3s ease; /* אנימציית מעבר צבע רקע */
+      }
+
+      .custom-button:hover {
+          background-color: transparent; /* שינוי צבע רקע בעת מעבר עכבר */
+      }
+
+      .custom-button.active {
+          background-color: transparent; /* צבע רקע עבור כפתור פעיל */
+      }
     </style>
   </head>
   <body>
-    <nav
-      class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0"
-    >
-      <a href="/" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+    <nav class="navbar navbar-expand-lg custom-navbar navbar-light shadow fixed-top p-0">
+      <a href={% if user.is_student %} "/users/student_dashboard" {% elif user.is_mentor %} "/users/mentor_dashboard" {% endif %} 
+      class="navbar-brand d-flex align-items-center px-4 px-lg-5">
         <h2 class="m-0 text-primary">
           <img src={% static "img/logo.png" %} alt="Description of Image"
           style="height: 70px;">
         </h2>
-      </a>
+
       <button
         type="button"
         class="navbar-toggler me-4"
@@ -138,25 +170,25 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto p-4 p-lg-0">
-          <a href="/" class="nav-item nav-link active">Home</a>
-          <a href="{% url 'users:questions_list' %}" class="nav-item nav-link"
+          <a href={% if user.is_student %} "/users/student_dashboard" {% elif user.is_mentor %} "/users/mentor_dashboard" {% endif %} class="nav-item nav-link custom-button">Home</a>
+          <a href="{% url 'users:questions_list' %}" class="nav-item nav-link custom-button"
             >Questions</a
           >
           {% if user.is_mentor %}
-          <a href="/chat/" class="nav-item nav-link">Add Question</a>
-          <a href="/users/submit-help-request" class="nav-item nav-link"
+          <a href="/chat/" class="nav-item nav-link custom-button">Add Question</a>
+          <a href="/users/submit-help-request" class="nav-item nav-link custom-button"
             >Requests</a
           >
-          <a href="/users/mentor_studentlist" class="nav-item nav-link"
+          <a href="/users/mentor_studentlist" class="nav-item nav-link custom-button"
             >My Students</a
           >
-          <a href="/users/mentor_profile" class="nav-item nav-link">Profile</a>
+          <a href="/users/mentor_profile" class="nav-item nav-link custom-button">Profile</a>
 
           {% endif %} {% if user.is_student %}
-          <a href="/users/student_mentor_request" class="nav-item nav-link"
+          <a href="/users/student_mentor_request" class="nav-item nav-link custom-button"
             >Requests</a
           >
-          <a href="/users/student_profile" class="nav-item nav-link">Profile</a>
+          <a href="/users/student_profile" class="nav-item nav-link custom-button">Profile</a>
 
           {% endif %}
         </div>

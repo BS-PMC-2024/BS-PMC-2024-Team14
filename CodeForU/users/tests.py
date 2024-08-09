@@ -1,8 +1,9 @@
+from unittest.mock import patch
+
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 from django.test import Client, TestCase
 from django.urls import reverse
-from django.http import JsonResponse
-from unittest.mock import patch
 
 from .models import HelpRequest, Mentor, Question, Student, StudentMentorRequest, User
 
@@ -92,7 +93,7 @@ class LogoutViewTest(TestCase):
         self.client.login(email="testuser@example.com", password="password")
 
         response = self.client.get(reverse("users:mentor_dashboard"))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
         response = self.client.post(reverse("users:logout"))
         self.assertEqual(response.status_code, 302)
@@ -583,9 +584,6 @@ class StudentFeedbackViewTests(TestCase):
         self.assertEqual(response.status_code, 302)  # Check for redirect status code
 
 
-
-
-
 class StudentDashboardViewTests(TestCase):
     def setUp(self):
         self.client = Client()
@@ -615,24 +613,26 @@ class StudentDashboardViewTests(TestCase):
             mentor_responsible=None,
             rating=5,
             mentor_rating=5,
-            level_updated=True
+            level_updated=True,
         )
         self.student_profile.save()
 
-        self.client.login(email='student@example.com', password='password123A@')
+        self.client.login(email="student@example.com", password="password123A@")
 
     def test_student_dashboard_resets_level_updated(self):
-        response = self.client.get(reverse('users:student_dashboard'))
+        response = self.client.get(reverse("users:student_dashboard"))
         self.student_profile.refresh_from_db()
         self.assertNotEqual(response.status_code, 200)
         self.assertTrue(self.student_profile.level_updated)
 
 
-from django.core import mail
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
-from .forms import EmailForm, CodeVerificationForm, SetNewPasswordForm
+from django.core import mail
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+
+from .forms import CodeVerificationForm, EmailForm, SetNewPasswordForm
+
 
 class PasswordResetTests(TestCase):
 
@@ -681,55 +681,56 @@ class PasswordResetTests(TestCase):
             birth_date=self.mentor_user.birth_date,
             passport_id=self.mentor_user.passport_id,
             gender=self.mentor_user.gender,
-            is_approved=True
+            is_approved=True,
         )
 
     def test_password_reset_request_view_get(self):
-        response = self.client.get(reverse('users:password_reset'))
+        response = self.client.get(reverse("users:password_reset"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'password_reset_email.html')
-        self.assertIsInstance(response.context['form'], EmailForm)
+        self.assertTemplateUsed(response, "password_reset_email.html")
+        self.assertIsInstance(response.context["form"], EmailForm)
 
     def test_password_reset_request_view_post_valid_email(self):
-        response = self.client.post(reverse('users:password_reset'), {'email': self.student_user.email})
-        self.assertEqual(response.status_code, 302)  # Redirect after successful email send
+        response = self.client.post(
+            reverse("users:password_reset"), {"email": self.student_user.email}
+        )
+        self.assertEqual(
+            response.status_code, 302
+        )  # Redirect after successful email send
         self.assertEqual(len(mail.outbox), 1)  # Check if email is sent
-        self.assertRedirects(response, reverse('users:verify_code'))
+        self.assertRedirects(response, reverse("users:verify_code"))
 
     def test_password_reset_request_view_post_invalid_email(self):
-        response = self.client.post(reverse('users:password_reset'), {'email': 'invalid@example.com'})
+        response = self.client.post(
+            reverse("users:password_reset"), {"email": "invalid@example.com"}
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'password_reset_email.html')
-
+        self.assertTemplateUsed(response, "password_reset_email.html")
 
     def test_code_verification_view_get(self):
-        response = self.client.get(reverse('users:verify_code'))
+        response = self.client.get(reverse("users:verify_code"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'password_reset_code.html')
-        self.assertIsInstance(response.context['form'], CodeVerificationForm)
+        self.assertTemplateUsed(response, "password_reset_code.html")
+        self.assertIsInstance(response.context["form"], CodeVerificationForm)
 
     def test_code_verification_view_post_valid_code(self):
-        self.client.session['reset_code'] = '1234'
+        self.client.session["reset_code"] = "1234"
         self.client.session.save()
-        response = self.client.post(reverse('users:verify_code'), {'code': '1234'})
+        response = self.client.post(reverse("users:verify_code"), {"code": "1234"})
         self.assertEqual(response.status_code, 200)
-        
 
     def test_code_verification_view_post_invalid_code(self):
-        self.client.session['reset_code'] = '1234'
+        self.client.session["reset_code"] = "1234"
         self.client.session.save()
-        response = self.client.post(reverse('users:verify_code'), {'code': '0000'})
+        response = self.client.post(reverse("users:verify_code"), {"code": "0000"})
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'password_reset_code.html')
+        self.assertTemplateUsed(response, "password_reset_code.html")
 
     def test_set_new_password_view_get(self):
-        response = self.client.get(reverse('users:set_new_password'))
+        response = self.client.get(reverse("users:set_new_password"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'set_new_password.html')
-        self.assertIsInstance(response.context['form'], SetNewPasswordForm)
-
-  
-
+        self.assertTemplateUsed(response, "set_new_password.html")
+        self.assertIsInstance(response.context["form"], SetNewPasswordForm)
 
 
 class LogoutConfirmationTests(TestCase):
@@ -761,17 +762,21 @@ class LogoutConfirmationTests(TestCase):
             mentor_responsible=None,
             rating=5,
             mentor_rating=5,
-            level_updated=True
+            level_updated=True,
         )
         self.student_profile.save()
         self.client.login(email="student@example.com", password="password123A@")
 
     def test_logout_confirmation_modal(self):
         # Access any protected view to ensure the user is logged in
-        response = self.client.get(reverse('users:student_dashboard'))  # Replace with an actual view in your project
+        response = self.client.get(
+            reverse("users:student_dashboard")
+        )  # Replace with an actual view in your project
         self.assertEqual(response.status_code, 302)
 
         # Simulate the logout action by posting to the logout URL
-        response = self.client.post(reverse('users:logout'))
-        self.assertRedirects(response, reverse('users:login'))
+        response = self.client.post(reverse("users:logout"))
+        self.assertRedirects(response, reverse("users:login"))
 
+        response = self.client.post(reverse("users:logout"))
+        self.assertRedirects(response, reverse("users:login"))

@@ -6,15 +6,16 @@ from django.test import TestCase
 # Import the test cases from the users and ChatBot apps
 from users.tests import (
     HelpRequestAndViewTest,
+    LogoutConfirmationTests,
     LogoutViewTest,
     MentorProfileTests,
+    PasswordResetTests,
     QuestionsListViewTests,
     RegisterViewTests,
-    StudentMentorRequestAndViewTest,
-    StudentProfileTests,
     StudentDashboardViewTests,
     StudentFeedbackViewTests,
-    LogoutConfirmationTests
+    StudentMentorRequestAndViewTest,
+    StudentProfileTests,
 )
 
 
@@ -31,9 +32,14 @@ def suite():
     )
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(QuestionsListViewTests))
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(QuestionModelTests))
-    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(StudentDashboardViewTests))
-    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(StudentFeedbackViewTests))
+    suite.addTests(
+        unittest.TestLoader().loadTestsFromTestCase(StudentDashboardViewTests)
+    )
+    suite.addTests(
+        unittest.TestLoader().loadTestsFromTestCase(StudentFeedbackViewTests)
+    )
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(LogoutConfirmationTests))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(PasswordResetTests))
     return suite
 
 

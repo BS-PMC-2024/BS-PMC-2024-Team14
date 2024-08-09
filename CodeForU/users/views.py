@@ -1,30 +1,28 @@
 import random
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse,JsonResponse
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from .decorators import mentor_required, student_required
 from .forms import (
+    CodeVerificationForm,
     CustomAuthenticationForm,
+    EmailForm,
     HelpRequestForm,
+    SetNewPasswordForm,
     StudentMentorRequestForm,
     UserRegistrationForm,
 )
 from .models import HelpRequest, Mentor, Question, Student, StudentMentorRequest, User
-
-
-from django.core.mail import send_mail
-from django.conf import settings
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib import messages
-from .forms import EmailForm, CodeVerificationForm, SetNewPasswordForm
-import random
 
 
 def get_mentor_ids():
@@ -159,10 +157,10 @@ def register_view(request):
 @login_required(login_url="/users/login")
 @mentor_required
 def mentor_dashboard(request):
-    mentor = Mentor.objects.get(user_ptr_id=request.user.id )
+    mentor = Mentor.objects.get(user_ptr_id=request.user.id)
     print(f"user id:{request.user.id}")
     print(mentor)
-    return render(request, "mentor_dashboard.html" , {"mentor":mentor})
+    return render(request, "mentor_dashboard.html", {"mentor": mentor})
 
 
 @login_required(login_url="/users/login")
@@ -345,11 +343,6 @@ def questions_list(request):
     if request.user.is_student:
         student = Student.objects.get(id=request.user.id)
         user_level = student.level
-        print("user level: \n")
-        print(user_level)
-        print("\n")
-        print("user itself: \n")
-        print(request.user)
 
     return render(
         request,
@@ -423,97 +416,104 @@ def student_feedback(request):
 
     return redirect(reverse("users:student_dashboard"))
 
+
 @student_required
 def reset_level_updated(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         student = request.user.student
         student.level_updated = False
         student.save()
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'failed'}, status=400)
+        return JsonResponse({"status": "success"})
+    return JsonResponse({"status": "failed"}, status=400)
+
 
 @mentor_required
 def level_up_view(request, student_id):
     student = Student.objects.get(id=student_id)
-    student.level = student.level+1
+    student.level = student.level + 1
     student.level_updated = True
     student.save()
     return redirect("users:mentor_studentlist")
 
 
-
 from django.views import View
+
 
 # users/views.py
 class PasswordResetRequestView(View):
     def get(self, request):
-        if 'reset_code' in request.session:
-            del request.session['reset_code']
-        if 'uidb64' in request.session:
-            del request.session['uidb64']
-        if 'token' in request.session:
-            del request.session['token']
-        return render(request, 'password_reset_email.html', {'form': EmailForm()})
-    
+        if "reset_code" in request.session:
+            del request.session["reset_code"]
+        if "uidb64" in request.session:
+            del request.session["uidb64"]
+        if "token" in request.session:
+            del request.session["token"]
+        return render(request, "password_reset_email.html", {"form": EmailForm()})
+
     def post(self, request):
-        email = request.POST.get('email')
+        email = request.POST.get("email")
         try:
             user = User.objects.get(email=email)
             reset_code = str(random.randint(1000, 9999))
-            request.session['reset_code'] = reset_code
-            request.session['uidb64'] = urlsafe_base64_encode(force_bytes(user.pk))
-            request.session['token'] = default_token_generator.make_token(user)
+            request.session["reset_code"] = reset_code
+            request.session["uidb64"] = urlsafe_base64_encode(force_bytes(user.pk))
+            request.session["token"] = default_token_generator.make_token(user)
             print(f"Generated reset code: {reset_code}")
             send_mail(
-                'Password Reset Code',
-                f'Your password reset code is {reset_code}',
-                'codeforu14@gmail.com',
+                "Password Reset Code",
+                f"Your password reset code is {reset_code}",
+                "codeforu14@gmail.com",
                 [email],
                 fail_silently=False,
             )
             print("Email sent successfully")
-            return redirect('users:verify_code')
+            return redirect("users:verify_code")
         except User.DoesNotExist:
-            messages.error(request, 'Email not found.')
+            messages.error(request, "Email not found.")
             print("Email not found")
-            return render(request, 'password_reset_email.html', {'form': EmailForm()})
+            return render(request, "password_reset_email.html", {"form": EmailForm()})
         except Exception as e:
-            messages.error(request, f'An error occurred: {str(e)}')
+            messages.error(request, f"An error occurred: {str(e)}")
             print(f"An error occurred: {str(e)}")
-            return render(request, 'password_reset_email.html', {'form': EmailForm()})
+            return render(request, "password_reset_email.html", {"form": EmailForm()})
 
 
 class CodeVerificationView(View):
     def get(self, request):
-        return render(request, 'password_reset_code.html', {'form': CodeVerificationForm()})
+        return render(
+            request, "password_reset_code.html", {"form": CodeVerificationForm()}
+        )
 
     def post(self, request):
-        code = request.POST.get('code')
-        if code == request.session.get('reset_code'):
-            return redirect('users:set_new_password')
+        code = request.POST.get("code")
+        if code == request.session.get("reset_code"):
+            return redirect("users:set_new_password")
         else:
-            messages.error(request, 'Invalid verification code.')
-            return render(request, 'password_reset_code.html', {'form': CodeVerificationForm()})
+            messages.error(request, "Invalid verification code.")
+            return render(
+                request, "password_reset_code.html", {"form": CodeVerificationForm()}
+            )
+
 
 class SetNewPasswordView(View):
     def get(self, request):
-        return render(request, 'set_new_password.html', {'form': SetNewPasswordForm()})
+        return render(request, "set_new_password.html", {"form": SetNewPasswordForm()})
 
     def post(self, request):
         form = SetNewPasswordForm(request.POST)
         if form.is_valid():
-            uidb64 = request.session.get('uidb64')
-            token = request.session.get('token')
+            uidb64 = request.session.get("uidb64")
+            token = request.session.get("token")
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
             if default_token_generator.check_token(user, token):
-                user.set_password(form.cleaned_data['new_password'])
+                user.set_password(form.cleaned_data["new_password"])
                 user.save()
                 # messages.success(request, 'Your password has been reset successfully.')
                 list(messages.get_messages(request))
-                return redirect('users:login')
+                return redirect("users:login")
         # messages.error(request, 'Failed to reset password. Please try again.')
         for field, errors in form.errors.items():
             for error in errors:
                 messages.error(request, error)
-        return render(request, 'set_new_password.html', {'form': form})
+        return render(request, "set_new_password.html", {"form": form})

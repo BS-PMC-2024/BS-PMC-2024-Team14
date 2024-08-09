@@ -17,35 +17,47 @@ mentor - student list
 	<link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/icon-font.min.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'src/plugins/cropperjs/dist/cropper.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/style.css' %}">
-	
+	 <link href={% static "img/favicon.ico" %} rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href={%static  "lib/animate/animate.min.css" %} rel="stylesheet">
+    <link href={%static "lib/owlcarousel/assets/owl.carousel.min.css" %}  rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href={%static "css/bootstrap.min.css" %} rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href={%static "css/style.css" %} rel="stylesheet">
+    <link href={%static "css/animate.css" %} rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 	<style>
-		html, body {
-			height: 100%;
-			margin: 0;
-		}
-		.scrollable-container {
-    max-height: 80vh; /* Adjust this value as needed */
-    overflow-y: auto; /* Enable vertical scrolling */
-    padding: 10px;
-}
+		body{
+        	background: #9053c7;
+			background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
+			background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
+			background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
+			background: linear-gradient(-135deg, #c850c0, #4158d0);
+			}
+			.btn-small {
+				font-size: 14px; /* Smaller text */
+				padding: 5px 10px; /* Reduced padding */
+				border-radius: 5px; /* Smaller border-radius */
+				line-height: 1.2; /* Adjust line-height for better alignment */
+			}
 
-		/* Ensure main-container and its parent elements stretch to fit */
-		.main-container {
-			min-height: 100vh; /* Ensures full viewport height */
-			display: flex;
-			flex-direction: column;
-		}
-
-		.container {
-			flex: 1; /* Allows the container to grow and fill available space */
-			overflow-y: auto; /* Allows vertical scrolling */
-		}
-
-		.contact-directory-box {
-			opacity: 0;
-			animation: fadeIn 2s forwards;
-		}
-
+			.btn-small:hover {
+				opacity: 0.9; /* Slightly darker on hover */
+			}
 		@keyframes fadeIn {
 			from {
 				opacity: 0;
@@ -58,7 +70,7 @@ mentor - student list
 		}
 	</style>
 
-    <div class="main-container scrollable-container">
+    <div class="main-container mt-4">
 		<div class="pd-ltr-20 xs-pd-20-10">
 			<div class="container pd-0">
 				<div class="page-header">
@@ -87,7 +99,7 @@ mentor - student list
 										<p>{{ student.email }}</p>
 										<div class="work text-success"><i class="ion-android-person"></i> level {{student.level}}</div>
 										{% if student.level < 5 %}
-										<a href="{% url 'users:level_up' student.id %}" class="btn btn-primary">Level Up</a>
+										<a href="{% url 'users:level_up' student.id %}" class="btn btn-primary btn-small">Level Up</a>
 										{% endif %}
 									</div>
 								</div>
