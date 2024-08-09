@@ -119,6 +119,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Maybe delete later
+CSRF_TRUSTED_ORIGINS = [
+    'https://localhost:8000',
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

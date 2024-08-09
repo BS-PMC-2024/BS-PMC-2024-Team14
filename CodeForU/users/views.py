@@ -79,9 +79,9 @@ def login_view(request):
             else:
                 # Authentication failed, check if the email exists
                 if not User.objects.filter(email=email).exists():
-                    messages.error(request, "Email does not exist.")
+                    messages.error(request, "Oops, Email does not exist.")
                 else:
-                    messages.error(request, "Password does not match the email.")
+                    messages.error(request, "Oops, wrong password, try again!.")
         else:
             email = form.cleaned_data.get("username")
             curr_user = None
@@ -90,9 +90,9 @@ def login_view(request):
             except Exception:
                 curr_user = None
             if not curr_user:
-                messages.error(request, "Email does not exist.")
+                messages.error(request, "Oops, Email does not exist.")
             else:
-                messages.error(request, "Password does not match the email.")
+                messages.error(request, "Oops, wrong password, try again!.")
             # messages.error(request,form.errors)
             # print("Form is not valid:", )
     else:
