@@ -13,7 +13,8 @@ from users.tests import (
     StudentMentorRequestAndViewTest,
     StudentProfileTests,
     StudentDashboardViewTests,
-    StudentFeedbackViewTests
+    StudentFeedbackViewTests,
+    LogoutConfirmationTests
 )
 
 
@@ -32,6 +33,7 @@ def suite():
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(QuestionModelTests))
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(StudentDashboardViewTests))
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(StudentFeedbackViewTests))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(LogoutConfirmationTests))
     return suite
 
 

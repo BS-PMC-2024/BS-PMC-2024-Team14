@@ -731,3 +731,47 @@ class PasswordResetTests(TestCase):
   
 
 
+
+class LogoutConfirmationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.student = User.objects.create_user(
+            email="student@example.com",
+            password="password123A@",
+            first_name="John",
+            last_name="Doe",
+            phone="1234567890",
+            birth_date="2000-01-01",
+            passport_id="A12345678",
+            gender="Male",
+        )
+        self.student.is_active = True
+        self.student.save()
+
+        self.student_profile = Student.objects.create(
+            id=self.student.id,
+            email=self.student.email,
+            first_name=self.student.first_name,
+            last_name=self.student.last_name,
+            phone=self.student.phone,
+            birth_date=self.student.birth_date,
+            passport_id=self.student.passport_id,
+            gender=self.student.gender,
+            level=1,
+            mentor_responsible=None,
+            rating=5,
+            mentor_rating=5,
+            level_updated=True
+        )
+        self.student_profile.save()
+        self.client.login(email="student@example.com", password="password123A@")
+
+    def test_logout_confirmation_modal(self):
+        # Access any protected view to ensure the user is logged in
+        response = self.client.get(reverse('users:student_dashboard'))  # Replace with an actual view in your project
+        self.assertEqual(response.status_code, 302)
+
+        # Simulate the logout action by posting to the logout URL
+        response = self.client.post(reverse('users:logout'))
+        self.assertRedirects(response, reverse('users:login'))
+
