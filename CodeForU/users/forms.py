@@ -171,12 +171,14 @@ class HelpRequestForm(forms.ModelForm):
                 attrs={
                     "style": "width: 100%; padding: 10px;border:1px solid #987D9A;border-radius:10px;",
                     "class": "form-control",
+                    "placeholder": "Enter the subject of your request",  # Placeholder for subject
                 }
             ),
             "message": forms.Textarea(
                 attrs={
                     "style": "width: 100%; height: 200px; padding: 10px;border:1px solid #987D9A;border-radius:10px;",
                     "class": "form-control",
+                    "placeholder": "Let us know your thoughts!",  # Placeholder for messag
                 }
             ),
         }
@@ -191,12 +193,15 @@ class StudentMentorRequestForm(forms.ModelForm):
                 attrs={
                     "style": "width: 100%; padding: 10px;border:1px solid #987D9A;border-radius:10px;",
                     "class": "form-control",
+                    "placeholder": "Enter the subject of your request",  # Placeholder for subject
+
                 }
             ),
             "message": forms.Textarea(
                 attrs={
                     "style": "width: 100%; height: 200px; padding: 10px;border:1px solid #987D9A;border-radius:10px;",
                     "class": "form-control",
+                    "placeholder": "Let us know your thoughts!",  # Placeholder for messag
                 }
             ),
         }
