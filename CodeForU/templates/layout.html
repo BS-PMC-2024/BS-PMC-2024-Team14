@@ -179,6 +179,8 @@
           <a href="/users/submit-help-request" class="nav-item nav-link custom-button"
             >Requests</a
           >
+          <a href="{% url 'users:mentor_submissions' %}" class="nav-item nav-link custom-button">Student Submissions</a>
+          
           <a href="/users/mentor_studentlist" class="nav-item nav-link custom-button"
             >My Students</a
           >
@@ -188,6 +190,8 @@
           <a href="/users/student_mentor_request" class="nav-item nav-link custom-button"
             >Requests</a
           >
+          <a href="{% url 'users:student_submissions' %}" class="nav-item nav-link custom-button">My Submissions</a>
+
           <a href="/users/student_profile" class="nav-item nav-link custom-button">Profile</a>
 
           {% endif %}

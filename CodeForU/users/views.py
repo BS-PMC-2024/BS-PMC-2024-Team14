@@ -343,7 +343,10 @@ def delete_help_request(request, request_id):
 
 @login_required(login_url="/users/login/")
 def questions_list(request):
-    questions = Question.objects.all()
+    all_questions = Question.objects.all()
+    
+    # Filter questions where id is equal to original_question_id
+    questions = [q for q in all_questions if q.id == q.original_question_id]
     user_level = None
     if request.user.is_student:
         student = Student.objects.get(id=request.user.id)
@@ -358,11 +361,6 @@ def questions_list(request):
 
 from django.shortcuts import get_object_or_404
 
-
-@login_required(login_url="/users/login/")
-def answer_question(request, question_id):
-    question = get_object_or_404(Question, id=question_id)
-    return render(request, "answer_question.html", {"question": question})
 
 
 @student_required
@@ -549,4 +547,79 @@ def get_hint(request, question_id):
     except Exception as e:
         return JsonResponse({"error": f"An error occurred: {e}"})
     
+@login_required(login_url="/users/login/")
+def answer_question(request, question_id):
+    # Fetch the original question using the ID provided in the URL
+    original_question = get_object_or_404(Question, id=question_id)
+    print("question id is : ")
+    print(question_id)
+    
+    # Check if the student already has a copy of the question
+    question = Question.objects.filter(
+        answered_by=request.user.id,
+        original_question_id=original_question.id
+    ).first()
+    if not question:
+        # Create a copy of the question for the student with the original question ID
+            question = Question.objects.create(
+                user=request.user.student.mentor_responsible,
+                answered_by=request.user.id,
+                original_question_id=original_question.id,
+                question_text=original_question.question_text,
+                level=original_question.level
+            )
 
+    
+    if request.method == 'POST':
+      
+
+        
+        code_answer = request.POST.get('code_answer')
+        print("im in the post method ")
+        # Save the answer to the copied question
+        question.answered_by = request.user.id
+        question.answer_text = code_answer
+        question.graded = False  # Reset grading status on resubmission
+        question.grade = None
+        question.notes = ""
+        question.save()
+
+        # Optionally notify the mentor
+        student = request.user.student
+        mentor = Mentor.objects.get(id=student.mentor_responsible)
+        # mentor.notifications += 1
+        # mentor.add_notification(f"New submission from {student.first_name} {student.last_name}")
+
+        # mentor.save()
+        # Implement notification or email if needed
+
+        return redirect(reverse('users:questions_list'))
+
+    return render(request, 'answer_question.html', {'question': question})
+
+@login_required(login_url="/users/login/")
+@student_required
+def student_submissions(request):
+    student = request.user.student
+    questions = Question.objects.filter(answered_by=student.id, answered_by__isnull=False)
+
+    return render(request, 'student_submissions.html', {'questions': questions})
+
+
+@login_required(login_url="/users/login/")
+@mentor_required
+def mentor_submissions(request):
+    mentor = request.user.mentor
+    # Get all students assigned to this mentor
+    students = Student.objects.filter(mentor_responsible=mentor.id)
+    
+
+    # Manually filter questions related to those students
+    questions = []
+    for student in students:
+        student_questions = Question.objects.filter(answered_by=student.id, answered_by__isnull=False)
+        questions.extend(student_questions)
+
+    print("hello")
+
+    return render(request, 'mentor_submissions.html', {'questions': questions})
