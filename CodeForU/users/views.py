@@ -587,7 +587,8 @@ def answer_question(request, question_id):
         # Optionally notify the mentor
         student = request.user.student
         mentor = Mentor.objects.get(id=student.mentor_responsible)
-       
+        mentor.add_notification(f"New submission from {student.first_name} {student.last_name}")
+        mentor.save()
       
         # Implement notification or email if needed
 
@@ -630,6 +631,17 @@ def grade_question(request, question_id):
     if request.method == 'POST':
         grade = request.POST.get('grade')
         notes = request.POST.get('notes')
+         # Convert the grade to an integer
+        try:
+            grade = int(grade)
+        except ValueError:
+            grade = 0  # Set a default value or handle the error as needed
+        
+        # Ensure grade is within the allowed range
+        if grade > 100:
+            grade = 100
+        elif grade < 0:
+            grade = 0
         question.grade = grade
         question.notes = notes
         question.graded = True
