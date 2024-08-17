@@ -587,10 +587,8 @@ def answer_question(request, question_id):
         # Optionally notify the mentor
         student = request.user.student
         mentor = Mentor.objects.get(id=student.mentor_responsible)
-        # mentor.notifications += 1
-        # mentor.add_notification(f"New submission from {student.first_name} {student.last_name}")
-
-        # mentor.save()
+       
+      
         # Implement notification or email if needed
 
         return redirect(reverse('users:questions_list'))
@@ -623,3 +621,26 @@ def mentor_submissions(request):
     print("hello")
 
     return render(request, 'mentor_submissions.html', {'questions': questions})
+
+@login_required(login_url="/users/login/")
+@mentor_required
+def grade_question(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+    print("im in the grade view")
+    if request.method == 'POST':
+        grade = request.POST.get('grade')
+        notes = request.POST.get('notes')
+        question.grade = grade
+        question.notes = notes
+        question.graded = True
+        question.save()
+
+        # Optionally, notify the student about the grading
+        # student = User.objects.get(id=question.answered_by)
+        # Send notification or email
+        
+        
+        
+        return redirect('users:mentor_submissions')
+
+    return render(request, 'grade_question.html', {'question': question})

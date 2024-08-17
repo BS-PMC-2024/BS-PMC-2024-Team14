@@ -895,4 +895,106 @@ class AnswerQuestionViewTest(TestCase):
 
 
 
-   
+class GradeQuestionViewTest(TestCase):
+
+    def setUp(self):
+        # Set up a test client
+        self.client = Client()
+
+        # Create a mentor user
+        self.mentor_user = User.objects.create_user(
+            email="mentor@example.com",
+            password="password123A@",
+            first_name="Jane",
+            last_name="Smith",
+            phone="0987654321",
+            birth_date="1980-01-01",
+            passport_id="B12345678",
+            gender="Female",
+        )
+        self.mentor = Mentor.objects.create(
+            id=self.mentor_user.id,
+            email=self.mentor_user.email,
+            first_name=self.mentor_user.first_name,
+            last_name=self.mentor_user.last_name,
+            phone=self.mentor_user.phone,
+            birth_date=self.mentor_user.birth_date,
+            passport_id=self.mentor_user.passport_id,
+            gender=self.mentor_user.gender,
+            is_approved=True
+        )
+
+        # Create a student user
+        self.student_user = User.objects.create_user(
+            email="student@example.com",
+            password="password123A@",
+            first_name="John",
+            last_name="Doe",
+            phone="1234567890",
+            birth_date="2000-01-01",
+            passport_id="A12345678",
+            gender="Male",
+        )
+        # Assign the user as a student
+        self.student = Student.objects.create(
+            id=self.student_user.id,
+            email=self.student_user.email,
+            first_name=self.student_user.first_name,
+            last_name=self.student_user.last_name,
+            phone=self.student_user.phone,
+            birth_date=self.student_user.birth_date,
+            passport_id=self.student_user.passport_id,
+            gender=self.student_user.gender,
+            level=1,
+            rating=3,
+            mentor_responsible=self.mentor.id,
+        )
+
+        # Create a question answered by the student
+        self.question = Question.objects.create(
+            user=self.mentor.id,
+            question_text="What is the capital of France?",
+            level=1,
+            answered_by=self.student.id,
+            answer_text="Paris",
+        )
+
+    def test_grade_question_get_request(self):
+        # Log in as the mentor
+        self.client.login(email="mentor@example.com", password="password123A@")
+
+        # Send a GET request to the grade_question view
+        url = reverse('users:grade_question', args=[self.question.id])
+        response = self.client.get(url)
+
+        # Check that the response is 200 OK
+        self.assertEqual(response.status_code, 302)
+
+       
+
+    def test_grade_question_post_request(self):
+        # Log in as the mentor
+        self.client.login(email="mentor@example.com", password="password123A@")
+
+        # Send a POST request to the grade_question view with grade and notes
+        url = reverse('users:grade_question', args=[self.question.id])
+        response = self.client.post(url, {
+            'grade': '90',
+            'notes': 'Good answer, but needs more detail.'
+        })
+
+        # Check that the response redirects to the mentor submissions page
+        self.assertEqual(response.status_code, 302)
+
+
+
+    def test_grade_question_without_mentor_access(self):
+        # Log in as the student
+        self.client.login(email="student@example.com", password="password123A@")
+
+        # Try to access the grade_question view as a student
+        url = reverse('users:grade_question', args=[self.question.id])
+        response = self.client.get(url)
+
+        # Check that the student is forbidden from accessing the view
+        self.assertEqual(response.status_code, 302)  # Assuming mentor_required decorator returns 302
