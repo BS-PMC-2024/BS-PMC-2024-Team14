@@ -9,3 +9,7 @@ def homepage(request):
     return render(request,'homepage.html',{"user_profile":user_profile})
 
 
+
+def custom_404_view(request, exception=None):
+    return render(request, '404.html', status=404)
+

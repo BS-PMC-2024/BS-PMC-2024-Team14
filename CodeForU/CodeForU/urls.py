@@ -17,13 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path , include
 from . import views
+from django.urls import path, re_path
 
 urlpatterns = [
     path('', views.homepage,name='homepage'),
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('chat/', include('ChatBot.urls')),
+    re_path(r'^.*$', views.custom_404_view),
     
     # other paths...
 
 ]
+
+
+
