@@ -666,3 +666,28 @@ def clear_notifications(request):
     user.notification_message = ""
     user.save()
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+def get_hint_for_grading(request, question_id):
+    try:
+        question = Question.objects.get(id=question_id)
+        client = OpenAI()
+
+        # Generate a prompt to assist in grading
+        prompt = f"Given the question: '{question.question_text}' and the student's answer: '{question.answer_text}', suggest feedback or help the mentor grade the answer."
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a grading assistant."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+
+        hint = response.choices[0].message.content
+        return JsonResponse({'hint': hint})
+    except Question.DoesNotExist:
+        return JsonResponse({'error': 'Question not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
