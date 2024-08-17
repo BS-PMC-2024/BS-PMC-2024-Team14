@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}Grade Question{% endblock %}
+
+{% block content %}
+
+<link href={% static "img/favicon.ico" %} rel="icon">
+
+<!-- Google Web Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+
+<!-- Icon Font Stylesheet -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Libraries Stylesheet -->
+<link href={% static "lib/animate/animate.min.css" %} rel="stylesheet">
+<link href={% static "lib/owlcarousel/assets/owl.carousel.min.css" %} rel="stylesheet">
+
+<!-- Customized Bootstrap Stylesheet -->
+<link href={% static "css/bootstrap.min.css" %} rel="stylesheet">
+
+<!-- Template Stylesheet -->
+<link href={% static "css/style.css" %} rel="stylesheet">
+<link href={% static "css/animate.css" %} rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+body {
+    background: #9053c7;
+    background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
+    background: linear-gradient(-135deg, #c850c0, #4158d0);
+}
+
+.question-container:hover {
+    background-color: white; 
+}   
+.question-item:hover {
+    background-color: inherit; 
+}
+.question-item {
+    background-color: inherit; 
+}
+
+.loader {
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #3498db;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+<div class="container" style="margin-top: 100px;">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="card-title text-center" style="color: #4158d0;">Grade Question</h1>
+                    <div class="question-container mb-4">
+                        <h5 class="text-muted">Original Question ID: {{ question.original_question_id }}</h5>
+                        <h5 class="text-muted">Question ID: {{ question.id }}</h5>
+                        <div class="mb-2"><strong>Level:</strong> {{ question.level }}</div>
+                        <div class="mb-2"><strong>Question:</strong> {{ question.question_text }}</div>
+                        <div class="mb-2"><strong>Student Answer:</strong> {{ question.answer_text }}</div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="grade" class="form-label" style="color: #4158d0;">Grade</label>
+                            <input type="number" class="form-control" id="grade" name="grade" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label" style="color: #4158d0;">Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="4" placeholder="Enter your feedback or comments here..."></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Submit Grade</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
