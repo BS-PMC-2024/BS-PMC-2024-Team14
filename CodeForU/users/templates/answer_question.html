@@ -198,74 +198,189 @@ Answer Question
 
 <!-- Help Button and Hint Box Script -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var editor = CodeMirror.fromTextArea(document.getElementById('code_answer'), {
-            lineNumbers: true,
-            mode: 'python',
-            matchBrackets: true,
-            styleActiveLine: true,
-            theme: 'default'
-        });
-        var submitButton = document.getElementById('submitAnswerButton');
-        var form = document.getElementById('answerForm');
-    
-        submitButton.addEventListener('click', function() {
-            submitButton.disabled = true;  // Disable the button
-            form.submit(); // Manually submit the form
-        });
-        
-        var helpButton = document.querySelector('.help-button');
-        var hintBox = document.querySelector('.hint-box');
-        var closeBtn = document.querySelector('.close-btn');
-        var hintButton = document.querySelector('.hint-button');
-        var hintText = document.createElement('p');
-        var loader;
+document.addEventListener('DOMContentLoaded', function() {
+    var editor = CodeMirror.fromTextArea(document.getElementById('code_answer'), {
+        lineNumbers: true,
+        mode: 'python',
+        matchBrackets: true,
+        styleActiveLine: true,
+        theme: 'default'
+    });
+    var submitButton = document.getElementById('submitAnswerButton');
+    var form = document.getElementById('answerForm');
 
-        helpButton.addEventListener('click', function() {
-            hintBox.style.display = 'block';
-        });
+    submitButton.addEventListener('click', function() {
+        submitButton.disabled = true;  // Disable the button
+        form.submit(); // Manually submit the form
+    });
 
-        closeBtn.addEventListener('click', function() {
-            hintBox.style.display = 'none';
-        });
+    var helpButton = document.querySelector('.help-button');
+    var hintBox = document.querySelector('.hint-box');
+    var closeBtn = document.querySelector('.close-btn');
+    var hintButton = document.querySelector('.hint-button');
+    var playVoiceButton = document.querySelector('.play-voice-button');
+    var pauseVoiceButton = document.querySelector('.pause-voice-button');
+    var hintText = document.createElement('p');
+    var loader;
+    var lastHintText = ""; // Store the last hint text
+    var isPaused = false; // Track if the speech is paused
+    var typingInterval; // Store the typing interval to clear it if necessary
 
-        hintButton.addEventListener('click', function() {
-            // Create loader element when button is clicked
-            loader = document.createElement('div');
-            loader.classList.add('loader');
-            hintBox.appendChild(loader);
+    // Initial disable of the play and pause voice buttons
+    disablePlayVoiceButton();
+    disablePauseVoiceButton();
 
-            loader.style.display = 'block';  // Show loader
-            hintText.textContent = ''; // Clear previous hint text
+    helpButton.addEventListener('click', function() {
+        hintBox.style.display = 'block';
+    });
 
-            fetch("{% url 'users:get_hint' question.id %}")
-                .then(response => response.json())
-                .then(data => {
-                    loader.style.display = 'none';  // Hide loader
+    closeBtn.addEventListener('click', function() {
+        hintBox.style.display = 'none';
+    });
 
-                    if (data.hint) {
-                        typeWriter(data.hint, hintText); // Typewriter effect
-                    } else if (data.error) {
-                        typeWriter(data.error, hintText); // Typewriter effect
-                    }
-                    hintBox.appendChild(hintText);
-                })
-                .catch(error => {
-                    loader.style.display = 'none';  // Hide loader
-                    hintText.textContent = "An error occurred while fetching the hint.";
-                    hintBox.appendChild(hintText);
-                });
-        });
+    hintButton.addEventListener('click', function() {
+        resetVoiceControls(); // Reset the voice control buttons and states
+        stopTyping(); // Stop any ongoing typing
 
-        function typeWriter(text, element, i = 0) {
+        loader = document.createElement('div');
+        loader.classList.add('loader');
+        hintBox.appendChild(loader);
+
+        loader.style.display = 'block';
+        hintText.textContent = ''; // Clear the hint box
+
+        fetch("{% url 'users:get_hint' question.id %}")
+            .then(response => response.json())
+            .then(data => {
+                loader.style.display = 'none';
+
+                if (data.hint) {
+                    typeWriter(data.hint, hintText);
+                    lastHintText = data.hint;
+                    enablePlayVoiceButton(); // Enable the play button after the hint is fetched
+                } else if (data.error) {
+                    typeWriter(data.error, hintText);
+                    lastHintText = data.error;
+                    enablePlayVoiceButton(); // Enable the play button even if there's an error message
+                }
+                hintBox.appendChild(hintText);
+            })
+            .catch(error => {
+                loader.style.display = 'none';
+                hintText.textContent = "An error occurred while fetching the hint.";
+                lastHintText = "";
+                disablePlayVoiceButton(); // Disable the play button if an error occurs
+                hintBox.appendChild(hintText);
+            });
+    });
+
+    playVoiceButton.addEventListener('click', function() {
+        if (lastHintText) {
+            speakText(lastHintText);
+        }
+    });
+
+    pauseVoiceButton.addEventListener('click', function() {
+        if (window.speechSynthesis.speaking && !isPaused) {
+            window.speechSynthesis.pause();
+            isPaused = true;
+            pauseVoiceButton.innerHTML = '<i class="fas fa-play"></i> Resume ';
+        } else if (isPaused) {
+            window.speechSynthesis.resume();
+            isPaused = false;
+            pauseVoiceButton.innerHTML = '<i class="fas fa-pause"></i> Pause ';
+        }
+    });
+
+    function typeWriter(text, element, i = 0) {
+        if (typingInterval) {
+            clearInterval(typingInterval); // Clear any existing interval
+        }
+        element.textContent = ''; // Clear previous text content
+        typingInterval = setInterval(() => {
             if (i < text.length) {
                 element.textContent += text.charAt(i);
                 i++;
-                setTimeout(() => typeWriter(text, element, i), 50);  // Adjust speed here (50ms)
+            } else {
+                clearInterval(typingInterval); // Stop typing once done
             }
+        }, 50); // Adjust speed here (50ms)
+    }
+
+    function stopTyping() {
+        if (typingInterval) {
+            clearInterval(typingInterval); // Stop the typing effect
+            typingInterval = null;
+        }
+    }
+
+    function speakText(text) {
+        var speech = new SpeechSynthesisUtterance();
+        speech.text = text;
+        speech.lang = 'en-US';
+
+        var voices = window.speechSynthesis.getVoices();
+        var maleVoice = voices.find(voice =>
+            voice.name.toLowerCase().includes('alex') ||
+            voice.name.toLowerCase().includes('daniel') ||
+            voice.name.toLowerCase().includes('tom') ||
+            voice.name.toLowerCase().includes('google uk english male')
+        );
+
+        if (maleVoice) {
+            speech.voice = maleVoice;
         }
 
+        speech.rate = 1;
+        speech.pitch = 1;
+
+        speech.onend = function() {
+            disablePauseVoiceButton();
+        };
+
+        window.speechSynthesis.speak(speech);
+        enablePauseVoiceButton();
+        isPaused = false; // Reset pause state
+        pauseVoiceButton.innerHTML = '<i class="fas fa-pause"></i> Pause '; // Ensure the button starts with pause option
+    }
+
+    function resetVoiceControls() {
+        // Reset the state of play/pause buttons and text
+        disablePlayVoiceButton();
+        disablePauseVoiceButton();
+        isPaused = false;
+        pauseVoiceButton.innerHTML = '<i class="fas fa-pause"></i> Pause ';
+        window.speechSynthesis.cancel(); // Cancel any ongoing speech
+    }
+
+    function enablePlayVoiceButton() {
+        playVoiceButton.disabled = false;
+        playVoiceButton.style.opacity = 1;
+    }
+
+    function disablePlayVoiceButton() {
+        playVoiceButton.disabled = true;
+        playVoiceButton.style.opacity = 0.5;
+    }
+
+    function enablePauseVoiceButton() {
+        pauseVoiceButton.disabled = false;
+        pauseVoiceButton.style.opacity = 1;
+    }
+
+    function disablePauseVoiceButton() {
+        pauseVoiceButton.disabled = true;
+        pauseVoiceButton.style.opacity = 0.5;
+    }
+
+    window.speechSynthesis.onvoiceschanged = function() {
+        if (lastHintText) {
+            speakText(lastHintText);
+        }
+    };
 });
+
+
 </script>
 
 <!-- Help Button and Hint Box -->
@@ -277,6 +392,12 @@ Answer Question
     <span class="close-btn">&times;</span>
     <p>Need help solving this question?</p>
     <button class="hint-button">Hint ✨</button>
+    <button class="play-voice-button" style="margin-left: 10px; background-color: #4158d0; color: white; border: none; border-radius: 4px; padding: 10px 20px; cursor: pointer; transition: background 0.3s ease;">
+        <i class="fas fa-volume-up"></i> Play 
+    </button>
+    <button class="pause-voice-button" style="margin-top: 3px; background-color: #ff6347; color: white; border: none; border-radius: 4px; padding: 10px 20px; cursor: pointer; transition: background 0.3s ease;">
+        <i class="fas fa-pause"></i> Pause
+    </button>
 </div>
 
 {% endblock %}
