@@ -23,6 +23,11 @@ from .forms import (
     UserRegistrationForm,
 )
 from .models import HelpRequest, Mentor, Question, Student, StudentMentorRequest, User
+import openai
+from dotenv import load_dotenv
+
+from openai import OpenAI
+load_dotenv()
 
 
 def get_mentor_ids():
@@ -517,3 +522,31 @@ class SetNewPasswordView(View):
             for error in errors:
                 messages.error(request, error)
         return render(request, "set_new_password.html", {"form": form})
+
+
+@login_required(login_url="/users/login/")
+def get_hint(request, question_id):
+    # Fetch the question text using the question_id
+    question = get_object_or_404(Question, id=question_id)
+
+    # Set up OpenAI API key and create a client
+    client = OpenAI()
+
+    try:
+        # Send the question to OpenAI and ask for a hint
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that provides hints, not complete answers, and make them two rows long to four not more"},
+                {"role": "user", "content": f"Please provide a hint for this question: {question.question_text}"}
+            ]
+        )
+
+        # Access the hint from the response
+        hint_message = response.choices[0].message.content
+        return JsonResponse({"hint": hint_message})
+
+    except Exception as e:
+        return JsonResponse({"error": f"An error occurred: {e}"})
+    
+

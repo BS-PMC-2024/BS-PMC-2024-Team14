@@ -8,6 +8,11 @@ class Question(models.Model):
     level = models.IntegerField(blank=True, null=True)
     answered_by = models.IntegerField(blank=True, null=True)  # New field for the user who answered
     answer_text = models.TextField(blank=True, null=True)  # New field for the answer text
+    original_question_id = models.IntegerField(blank=True, null=True)  # Reference to the original question
+    
+    grade = models.IntegerField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    graded = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Question by user ID {self.user} at {self.created_at}"
