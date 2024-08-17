@@ -780,3 +780,43 @@ class LogoutConfirmationTests(TestCase):
 
         response = self.client.post(reverse("users:logout"))
         self.assertRedirects(response, reverse("users:login"))
+
+class GetHintViewTest(TestCase):
+
+    def setUp(self):
+        # Set up a test client
+        self.client = Client()
+
+        # Create a test user
+        self.user = User.objects.create_user(
+            email="testuser@example.com",
+            first_name="Test",
+            last_name="User",
+            phone="1234567890",
+            birth_date="2000-01-01",
+            passport_id="123456789",
+            gender="Male",
+            password="password123",
+        )
+
+        # Create a test question
+        self.question = Question.objects.create(
+            user=self.user.id,  # Assuming the user field stores the user's ID
+            question_text="What is the capital of France?",
+            level=1,
+        )
+
+    def test_get_hint_view(self):
+        # Log in the test user
+        self.client.login(email="testuser@example.com", password="password123")
+
+        # Send a GET request to the get_hint view
+        url = reverse('users:get_hint', args=[self.question.id])
+        response = self.client.get(url)
+
+        # Check that the response is 200 OK
+        self.assertEqual(response.status_code, 200)
+
+        # Check that the response contains a hint key (assuming the hint is always returned in the response)
+        self.assertIn("hint", response.json())
+

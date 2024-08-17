@@ -46,5 +46,5 @@ urlpatterns = [
     path('password_reset/', views.PasswordResetRequestView.as_view(), name='password_reset'),
     path('password_reset/verify/', views.CodeVerificationView.as_view(), name='verify_code'),
     path('password_reset/set_new_password/', views.SetNewPasswordView.as_view(), name='set_new_password'),
-    
+    path('questions/<int:question_id>/hint/', views.get_hint, name='get_hint'),
 ]
