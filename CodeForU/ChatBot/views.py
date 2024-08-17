@@ -56,6 +56,10 @@ def chat_page(request):
                 # Append assistant's response to the conversation
                 conversation.append({"role": "assistant", "content": response_message})
                 request.session[session_key] = conversation
+                return JsonResponse({
+                'user_message': user_input,
+                'assistant_message': response_message
+            })
 
             except openai.error.InvalidRequestError as e:
                 if e.code == 'insufficient_quota':
@@ -94,5 +98,7 @@ def save_question(request):
         question_text = request.POST.get('question_text')
         level = request.POST.get('level')
         user_id = request.user.id  # Manually set the user ID
-        Question.objects.create(user=user_id, question_text=question_text, level=level)
+        q = Question.objects.create(user=user_id, question_text=question_text, level=level)
+        q.original_question_id = q.id
+        q.save()
         return redirect('chat_page')
