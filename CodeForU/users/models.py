@@ -84,6 +84,8 @@ class User(AbstractUser):
     saved_questions = models.ManyToManyField(
         Question, related_name="saved_by", blank=True
     )  # Reference the Question model
+    notifications = models.IntegerField(default=0,blank=True)
+    notification_message = models.TextField(blank=True, default="")
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
@@ -127,6 +129,23 @@ class User(AbstractUser):
         except Exception as e:
             # print(f"Error checking if user {self.email} is a student: {e}")
             return False
+    def add_notification(self, message):
+        if self.notification_message:
+            self.notification_message += f"|{message}"
+        else:
+            self.notification_message = message
+        self.notifications += 1
+        self.save()
+
+    def get_notification_messages(self):
+        if self.notifications:
+            return self.notification_message.split("|")
+        return ""
+
+    def clear_notifications(self):
+        self.notifications = 0
+        self.notification_message = ""
+        self.save()
 
 
 class Student(User):

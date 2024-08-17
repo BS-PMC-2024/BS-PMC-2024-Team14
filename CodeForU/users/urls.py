@@ -50,4 +50,6 @@ urlpatterns = [
     path('student_submissions/', views.student_submissions, name='student_submissions'),
     path('mentor_submissions/', views.mentor_submissions, name='mentor_submissions'),
     path("questions/<int:question_id>/grade/", views.grade_question, name="grade_question"),
+    path('clear_notifications/', views.clear_notifications, name='clear_notifications'),
+
 ]
