@@ -998,3 +998,42 @@ class GradeQuestionViewTest(TestCase):
 
         # Check that the student is forbidden from accessing the view
         self.assertEqual(response.status_code, 302)  # Assuming mentor_required decorator returns 302
+
+
+class UserNotificationTest(TestCase):
+
+    def setUp(self):
+        # Create a test user
+        self.user = User.objects.create_user(
+            email="testuser@example.com",
+            password="password123A@",
+            first_name="John",
+            last_name="Doe",
+            phone="1234567890",
+            birth_date="2000-01-01",
+            passport_id="A12345678",
+            gender="Male",
+        )
+
+    def test_add_notification(self):
+        # Add a notification
+        self.user.add_notification("New message received.")
+        self.user.add_notification("Your submission has been graded.")
+
+        # Check that notifications count is correct
+        self.assertEqual(self.user.notifications, 2)
+
+        # Check that the notification messages are stored correctly
+        expected_messages = ["New message received.", "Your submission has been graded."]
+        self.assertEqual(self.user.get_notification_messages(), expected_messages)
+
+    def test_clear_notifications(self):
+        # Add a notification
+        self.user.add_notification("New message received.")
+
+        # Clear notifications
+        self.user.clear_notifications()
+
+        # Check that notifications are cleared
+        self.assertEqual(self.user.notifications, 0)
+        self.assertEqual(self.user.get_notification_messages(), "")

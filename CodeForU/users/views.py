@@ -638,9 +638,19 @@ def grade_question(request, question_id):
         # Optionally, notify the student about the grading
         # student = User.objects.get(id=question.answered_by)
         # Send notification or email
+        student = User.objects.get(id=question.answered_by)
+        student.add_notification("Your submission has been graded")
         
         
         
         return redirect('users:mentor_submissions')
 
     return render(request, 'grade_question.html', {'question': question})
+
+@login_required(login_url="/users/login/")
+def clear_notifications(request):
+    user = request.user
+    user.notifications = 0
+    user.notification_message = ""
+    user.save()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
