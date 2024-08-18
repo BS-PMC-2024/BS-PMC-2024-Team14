@@ -178,3 +178,80 @@ class StudentFeedbackSeleniumTests(StaticLiveServerTestCase):
         time.sleep(5)
 
 
+
+class SubmitHelpRequestSeleniumTests(StaticLiveServerTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.browser = webdriver.Chrome()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.browser.quit()
+        super().tearDownClass()
+
+    def setUp(self):
+        # Create and save a test mentor user
+        self.mentor_user = get_user_model().objects.create_user(
+            email="mentor@example.com",
+            first_name="Mentor",
+            last_name="User",
+            phone="1234567890",
+            birth_date="1985-01-01",
+            passport_id="987654321",
+            gender="Male",
+            password="Password123@",
+        )
+        self.mentor = Mentor.objects.create(
+            id=self.mentor_user.id,
+            email=self.mentor_user.email,
+            first_name=self.mentor_user.first_name,
+            last_name=self.mentor_user.last_name,
+            phone=self.mentor_user.phone,
+            birth_date=self.mentor_user.birth_date,
+            passport_id=self.mentor_user.passport_id,
+            gender=self.mentor_user.gender,
+            is_approved=True,
+        )
+        self.mentor_user.save()
+
+    def login_mentor(self):
+        # Log in as the mentor
+        login_url = reverse('users:login')
+        self.browser.get(self.live_server_url + login_url)
+        self.browser.find_element(By.NAME, "username").send_keys("mentor@example.com")
+        self.browser.find_element(By.NAME, "password").send_keys("Password123@")
+        self.browser.find_element(By.CSS_SELECTOR, "button.login100-form-btn").click()
+
+        # Wait for the redirect after login
+        WebDriverWait(self.browser, 10).until(
+            EC.url_contains(self.live_server_url + reverse('users:mentor_dashboard'))
+        )
+
+    def test_mentor_navigates_to_help_request(self):
+        self.login_mentor()
+
+        # Redirect to the help request submission page directly
+        help_request_url = reverse('users:submit_help_request')  # Use reverse to get the URL
+        print(f"Redirecting to: {self.live_server_url + help_request_url}")
+        self.browser.get(self.live_server_url + help_request_url)
+
+        # Wait for the help request submission page to load
+        WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "form#new-request-form"))
+        )
+        print("Help request form page loaded successfully.")
+
+        # Fill out the help request form
+        self.browser.find_element(By.NAME, "subject").send_keys("Need assistance with a task")
+        self.browser.find_element(By.NAME, "message").send_keys("Could you please help me with this specific problem?")
+
+        # Trigger the JavaScript function to submit the form
+        self.browser.execute_script("submitNewRequest()")
+
+        # Wait for the page to reload and display the help request list
+        
+
+        # Pause to visually verify the result (optional)
+        time.sleep(20)
+
