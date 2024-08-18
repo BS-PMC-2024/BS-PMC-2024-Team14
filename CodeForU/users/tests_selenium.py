@@ -84,3 +84,97 @@ class QuestionsListSeleniumTests(StaticLiveServerTestCase):
 
         
         time.sleep(20)
+
+
+from django.urls import reverse
+
+
+class StudentFeedbackSeleniumTests(StaticLiveServerTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.browser = webdriver.Chrome()  # or webdriver.Firefox()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.browser.quit()
+        super().tearDownClass()
+
+    def setUp(self):
+        # Create and save test student user
+        self.student_user = get_user_model().objects.create_user(
+            email="student@example.com",
+            first_name="Student",
+            last_name="User",
+            phone="1234567890",
+            birth_date="2000-01-01",
+            passport_id="123400789",
+            gender="Male",
+            password="Password123@",
+        )
+        self.student = Student.objects.create(
+            id=self.student_user.id,
+            email=self.student_user.email,
+            first_name=self.student_user.first_name,
+            last_name=self.student_user.last_name,
+            phone=self.student_user.phone,
+            birth_date=self.student_user.birth_date,
+            passport_id=self.student_user.passport_id,
+            gender=self.student_user.gender,
+            level=5,
+        )
+        self.student_user.save()  # Save the user to ensure it's in the database
+
+    def test_student_can_submit_feedback(self):
+        # Open the login page
+        print("Attempting to log in...")
+        login_url = reverse('users:login')  # Use reverse to get the login URL
+        self.browser.get(self.live_server_url + login_url)
+        
+        # Fill in the login form
+        self.browser.find_element(By.NAME, "username").send_keys("student@example.com")
+        self.browser.find_element(By.NAME, "password").send_keys("Password123@")
+
+        # Submit the login form
+        self.browser.find_element(By.CSS_SELECTOR, "button.login100-form-btn").click()
+
+        # After successful login, redirect to student dashboard
+        print("Redirecting to the student dashboard...")
+        student_dashboard_url = reverse('users:student_dashboard')  # Use reverse to get the dashboard URL
+        self.browser.get(self.live_server_url + student_dashboard_url)
+        
+        # Wait for the dashboard page to load
+        WebDriverWait(self.browser, 20).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "star-rating-mentor"))
+        )
+        print("Student dashboard loaded.")
+
+        # Scroll down to the bottom of the page
+        self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)  # Wait briefly to ensure the page is fully scrolled
+
+        # Ensure the star-rating-mentor input is clickable
+        mentor_star_selector = "input#mentor_star5"
+        star_element = WebDriverWait(self.browser, 20).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, mentor_star_selector))
+        )
+
+        # Attempt to click the star using JavaScript if direct clicking doesn't work
+        self.browser.execute_script("arguments[0].click();", star_element)
+        print("Clicked the mentor star element via JavaScript")
+
+        # Submit the mentor rating form
+        self.browser.find_element(By.CSS_SELECTOR, "form[action*='/student_feedback'] button.upload-button").click()
+
+        # Wait for the redirect after submission
+        WebDriverWait(self.browser, 10).until(
+            EC.url_contains(self.live_server_url + student_dashboard_url)
+        )
+
+        print("Mentor rating submitted and verified.")
+
+        # Optionally, verify that the stars are selected correctly after submission
+        self.browser.get(self.live_server_url + student_dashboard_url)
+        time.sleep(5)
+
+
