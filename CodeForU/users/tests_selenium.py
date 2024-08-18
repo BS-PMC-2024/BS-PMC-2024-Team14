@@ -255,3 +255,91 @@ class SubmitHelpRequestSeleniumTests(StaticLiveServerTestCase):
         # Pause to visually verify the result (optional)
         time.sleep(20)
 
+class StudentProfileSeleniumTests(StaticLiveServerTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.browser = webdriver.Chrome()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.browser.quit()
+        super().tearDownClass()
+
+    def setUp(self):
+        # Create and save test student user
+        self.student_user = get_user_model().objects.create_user(
+            email="student@example.com",
+            first_name="Student",
+            last_name="User",
+            phone="1234567890",
+            birth_date="2000-01-01",
+            passport_id="123400789",
+            gender="Male",
+            password="Password123@",
+        )
+        self.student = Student.objects.create(
+            id=self.student_user.id,
+            email=self.student_user.email,
+            first_name=self.student_user.first_name,
+            last_name=self.student_user.last_name,
+            phone=self.student_user.phone,
+            birth_date=self.student_user.birth_date,
+            passport_id=self.student_user.passport_id,
+            gender=self.student_user.gender,
+            level=5,
+        )
+        self.student_user.save()  # Save the user to ensure it's in the database
+
+    def test_student_profile_update(self):
+        # Log in as the student and go to student_dashboard
+        print("Attempting to log in...")
+        login_url = reverse('users:login')  # Use reverse to get the login URL
+        self.browser.get(self.live_server_url + login_url)
+        
+        # Fill in the login form
+        self.browser.find_element(By.NAME, "username").send_keys("student@example.com")
+        self.browser.find_element(By.NAME, "password").send_keys("Password123@")
+
+        # Submit the login form
+        self.browser.find_element(By.CSS_SELECTOR, "button.login100-form-btn").click()
+
+        # Redirect to student_dashboard
+        print("Redirecting to the student dashboard...")
+        student_dashboard_url = reverse('users:student_dashboard')  # Use reverse to get the dashboard URL
+        self.browser.get(self.live_server_url + student_dashboard_url)
+        
+        # Now explicitly redirect to the student profile page
+        print("Redirecting to the student profile page...")
+        student_profile_url = reverse('users:student_profile')
+        self.browser.get(self.live_server_url + student_profile_url)
+        
+        # Wait for the profile page to load
+        WebDriverWait(self.browser, 20).until(
+            EC.presence_of_element_located((By.ID, "first_name"))
+        )
+        print("Student profile page loaded.")
+        
+        # Enable editing and update fields
+        self.browser.find_element(By.ID, "editButton").click()
+        self.browser.find_element(By.ID, "first_name").clear()
+        self.browser.find_element(By.ID, "first_name").send_keys("UpdatedFirstName")
+        self.browser.find_element(By.ID, "last_name").clear()
+        self.browser.find_element(By.ID, "last_name").send_keys("UpdatedLastName")
+        self.browser.find_element(By.ID, "phone").clear()
+        self.browser.find_element(By.ID, "phone").send_keys("0987654321")
+        self.browser.find_element(By.ID, "email").clear()
+        self.browser.find_element(By.ID, "email").send_keys("updated_student@example.com")
+
+        # Submit the form
+        self.browser.find_element(By.ID, "submitButton").click()
+
+        # Wait for the redirect after submission
+        WebDriverWait(self.browser, 10).until(
+            EC.url_contains(self.live_server_url + student_profile_url)
+        )
+
+        print("Profile updated and verified.")
+
+        # Pause to visually verify the result (optional)
+        time.sleep(10)
