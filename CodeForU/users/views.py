@@ -140,7 +140,7 @@ def register_view(request):
                     phone=user.phone,
                     gender=user.gender,
                     passport_id=user.passport_id,
-                    level=0,  # Add additional fields for students here
+                    level=1,  # Add additional fields for students here
                     mentor_responsible=res_mentor.id,
                 )
                 student.set_password(form.cleaned_data["password"])
