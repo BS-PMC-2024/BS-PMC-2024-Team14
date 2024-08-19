@@ -778,6 +778,7 @@ class LogoutConfirmationTests(TestCase):
         response = self.client.post(reverse("users:logout"))
         self.assertRedirects(response, reverse("users:login"))
 
+
 class GetHintViewTest(TestCase):
 
     def setUp(self):
@@ -808,7 +809,7 @@ class GetHintViewTest(TestCase):
         self.client.login(email="testuser@example.com", password="password123")
 
         # Send a GET request to the get_hint view
-        url = reverse('users:get_hint', args=[self.question.id])
+        url = reverse("users:get_hint", args=[self.question.id])
         response = self.client.get(url)
 
         # Check that the response is 200 OK
@@ -816,8 +817,6 @@ class GetHintViewTest(TestCase):
 
         # Check that the response contains a hint key (assuming the hint is always returned in the response)
         self.assertIn("hint", response.json())
-
-
 
 
 class AnswerQuestionViewTest(TestCase):
@@ -846,7 +845,7 @@ class AnswerQuestionViewTest(TestCase):
             birth_date=self.mentor_user.birth_date,
             passport_id=self.mentor_user.passport_id,
             gender=self.mentor_user.gender,
-            is_approved=True
+            is_approved=True,
         )
 
         # Create a student user
@@ -887,12 +886,11 @@ class AnswerQuestionViewTest(TestCase):
         self.client.login(email="student@example.com", password="password123A@")
 
         # Send a GET request to the answer_question view
-        url = reverse('users:answer_question', args=[self.original_question.id])
+        url = reverse("users:answer_question", args=[self.original_question.id])
         response = self.client.get(url)
 
         # Check that the response is 200 OK
         self.assertEqual(response.status_code, 302)
-
 
 
 class GradeQuestionViewTest(TestCase):
@@ -921,7 +919,7 @@ class GradeQuestionViewTest(TestCase):
             birth_date=self.mentor_user.birth_date,
             passport_id=self.mentor_user.passport_id,
             gender=self.mentor_user.gender,
-            is_approved=True
+            is_approved=True,
         )
 
         # Create a student user
@@ -964,40 +962,37 @@ class GradeQuestionViewTest(TestCase):
         self.client.login(email="mentor@example.com", password="password123A@")
 
         # Send a GET request to the grade_question view
-        url = reverse('users:grade_question', args=[self.question.id])
+        url = reverse("users:grade_question", args=[self.question.id])
         response = self.client.get(url)
 
         # Check that the response is 200 OK
         self.assertEqual(response.status_code, 302)
-
-       
 
     def test_grade_question_post_request(self):
         # Log in as the mentor
         self.client.login(email="mentor@example.com", password="password123A@")
 
         # Send a POST request to the grade_question view with grade and notes
-        url = reverse('users:grade_question', args=[self.question.id])
-        response = self.client.post(url, {
-            'grade': '90',
-            'notes': 'Good answer, but needs more detail.'
-        })
+        url = reverse("users:grade_question", args=[self.question.id])
+        response = self.client.post(
+            url, {"grade": "90", "notes": "Good answer, but needs more detail."}
+        )
 
         # Check that the response redirects to the mentor submissions page
         self.assertEqual(response.status_code, 302)
-
-
 
     def test_grade_question_without_mentor_access(self):
         # Log in as the student
         self.client.login(email="student@example.com", password="password123A@")
 
         # Try to access the grade_question view as a student
-        url = reverse('users:grade_question', args=[self.question.id])
+        url = reverse("users:grade_question", args=[self.question.id])
         response = self.client.get(url)
 
         # Check that the student is forbidden from accessing the view
-        self.assertEqual(response.status_code, 302)  # Assuming mentor_required decorator returns 302
+        self.assertEqual(
+            response.status_code, 302
+        )  # Assuming mentor_required decorator returns 302
 
 
 class UserNotificationTest(TestCase):
@@ -1024,7 +1019,10 @@ class UserNotificationTest(TestCase):
         self.assertEqual(self.user.notifications, 2)
 
         # Check that the notification messages are stored correctly
-        expected_messages = ["New message received.", "Your submission has been graded."]
+        expected_messages = [
+            "New message received.",
+            "Your submission has been graded.",
+        ]
         self.assertEqual(self.user.get_notification_messages(), expected_messages)
 
     def test_clear_notifications(self):
@@ -1070,7 +1068,7 @@ class GetHintForGradingViewTest(TestCase):
         self.client.login(email="testuser@example.com", password="password123")
 
         # Send a GET request to the get_hint_for_grading view
-        url = reverse('users:get_hint_for_grading', args=[self.question.id])
+        url = reverse("users:get_hint_for_grading", args=[self.question.id])
         response = self.client.get(url)
 
         # Check that the response is 200 OK
