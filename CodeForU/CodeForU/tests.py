@@ -16,6 +16,11 @@ from users.tests import (
     StudentFeedbackViewTests,
     StudentMentorRequestAndViewTest,
     StudentProfileTests,
+    GetHintViewTest,
+    AnswerQuestionViewTest,
+    GradeQuestionViewTest,
+    UserNotificationTest,
+    GetHintForGradingViewTest
 )
 
 
@@ -40,6 +45,11 @@ def suite():
     )
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(LogoutConfirmationTests))
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(PasswordResetTests))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(GetHintViewTest))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(AnswerQuestionViewTest))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(GradeQuestionViewTest))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(UserNotificationTest))
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(GetHintForGradingViewTest))
     return suite
 
 

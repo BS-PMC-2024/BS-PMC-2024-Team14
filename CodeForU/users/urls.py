@@ -52,6 +52,7 @@ urlpatterns = [
     path("questions/<int:question_id>/grade/", views.grade_question, name="grade_question"),
     path('clear_notifications/', views.clear_notifications, name='clear_notifications'),
     path('questions/<int:question_id>/hint-for-grading/', views.get_hint_for_grading, name='get_hint_for_grading'),
+    path("student_level_up/", views.student_level_up, name="student_level_up"),
 
 
 ]

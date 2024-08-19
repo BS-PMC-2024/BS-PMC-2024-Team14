@@ -205,6 +205,7 @@ def logout_view(request):
 
 
 @login_required(login_url="/users/login/")
+@student_required
 def student_profile(request):
     if request.method == "POST":
         user_id = request.POST.get("user_id")
@@ -257,7 +258,23 @@ def student_profile(request):
     return redirect(reverse("users:student_dashboard"))
 
 
+@student_required
+def student_level_up(request):
+    user_id = request.user.id
+    student = Student.objects.get(id=user_id)
+    request_obj = StudentMentorRequest(
+        user = user_id,
+        mentor_responsible=student.mentor_responsible,
+        subject="Ask for level up",
+        message="Please can you raise my level?",
+        is_resolved=False
+    )
+    request_obj.save()
+    return redirect("users:student_profile")
+
+
 @login_required(login_url="/users/login/")
+@mentor_required
 def mentor_profile(request):
     if request.method == "POST":
         user_id = request.POST.get("user_id")
