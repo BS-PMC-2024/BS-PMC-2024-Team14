@@ -141,7 +141,7 @@ Student Profile
                                 </div>
                                 <div class="input-group col-2 d-flex flex-column">
                                     <label class="label">Ask for level up</label>
-                                    <button class="btn btn-primary px-4" style="background:#9954ae; border:none; border-radius:8px; font-weight:100;" type="button">Level up</button>
+                                    <button id="level-up-button" class="btn btn-primary px-4" style="background:#9954ae; border:none; border-radius:8px; font-weight:100;" type="button" onclick="handleLevelUp()">Level up</button>                                    
                                 </div>
                             </div>
                         </div>
@@ -159,6 +159,15 @@ Student Profile
         </div>
     </div>
     <script src={% static "js/main.js" %}></script>
+    <script>
+               function handleLevelUp() {
+            // Show an alert message
+            alert("Request to level up has been submitted!");
+            // Redirect to the URL
+            window.location.href = "{% url 'users:student_level_up' %}";
+        }
+
+    </script>
 </body>
 </html>
 {% endblock %}
