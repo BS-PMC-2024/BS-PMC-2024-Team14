@@ -153,13 +153,13 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg custom-navbar navbar-light shadow fixed-top p-0">
-      <a href={% if user.is_student %} "/users/student_dashboard" {% elif user.is_mentor %} "/users/mentor_dashboard" {% endif %} 
+      <a href={% if user.is_student %} "/users/student_dashboard/" {% elif user.is_mentor %} "/users/mentor_dashboard/" {% endif %} 
       class="navbar-brand d-flex align-items-center px-4 px-lg-5">
         <h2 class="m-0 text-primary">
           <img src={% static "img/logo.png" %} alt="Description of Image"
-          style="height: 70px;">
+          style="height: 60px;">
         </h2>
-
+      </a>
       <button
         type="button"
         class="navbar-toggler me-4"
@@ -182,8 +182,11 @@
           >
           <a href="{% url 'users:mentor_submissions' %}" class="nav-item nav-link custom-button">Student Submissions</a>
           <a href="{% url 'users:mentor_studentlist' %}" class="nav-item nav-link custom-button"
-            >My Students</a
+            >Students</a
           >
+          <a href="{% url 'users:mentor_requests' %}" class="nav-item nav-link custom-button"
+          >Student Requests</a
+        >
           <a href="{% url 'users:mentor_profile' %}" class="nav-item nav-link custom-button">Profile</a>
 
           {% endif %} {% if user.is_student %}
@@ -205,11 +208,11 @@
               <span class="badge bg-danger">{{ user.notifications }}</span>
             {% endif %}
           </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 250px;">
             {% if user.get_notification_messages %}
               {% for message in user.get_notification_messages %}
                 
-                <li><a class="dropdown-item" href="#">{{ message }}</a></li>
+                <li><a class="dropdown-item" href="#" style="width: 250px; word-wrap: break-word; white-space: normal;">{{ message }}</a></li>
               {% endfor %}
             {% else %}
               <li><span class="dropdown-item-text">No new notifications</span></li>

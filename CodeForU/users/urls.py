@@ -53,6 +53,8 @@ urlpatterns = [
     path('clear_notifications/', views.clear_notifications, name='clear_notifications'),
     path('questions/<int:question_id>/hint-for-grading/', views.get_hint_for_grading, name='get_hint_for_grading'),
     path("student_level_up/", views.student_level_up, name="student_level_up"),
+    path('mentor_requests/', views.mentor_requests_view, name='mentor_requests'),
+    path('mentor-requests/<int:request_id>/add-response/', views.add_response, name='add_response'),
 
 
 ]

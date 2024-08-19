@@ -328,6 +328,38 @@ def mentor_profile(request):
 
 
 @mentor_required
+def mentor_requests_view(request):
+    if request.user.is_mentor:
+        requests = StudentMentorRequest.objects.filter(mentor_responsible=request.user.id)
+    else:
+        requests = StudentMentorRequest.objects.filter(user=request.user.id)
+    
+    context = {
+        'requests': requests
+    }
+    
+    return render(request, 'mentor_requests.html', context)
+
+
+@mentor_required
+def add_response(request, request_id):
+    mentor_request = get_object_or_404(StudentMentorRequest, id=request_id, mentor_responsible=request.user.id)
+
+    if request.method == 'POST':
+        response = request.POST.get('response')
+        if response:
+            mentor_request.response = response
+            mentor_request.is_resolved = True  # Assuming adding a response resolves the request
+            mentor_request.save()
+            mentor = request.user.mentor
+            student = Student.objects.get(id=mentor_request.user)
+            student.add_notification(f"New Response from Mentor {mentor.first_name} {mentor.last_name} On Request ID:{mentor_request.id} ")
+            student.save()
+
+    return redirect('users:mentor_requests')
+
+
+@mentor_required
 def submit_help_request(request):
     help_requests = None
     if request.method == "POST":
@@ -391,6 +423,10 @@ def student_mentor_request(request):
             st_m_request.user = student.id
             st_m_request.mentor_responsible = student.mentor_responsible
             st_m_request.save()
+
+            mentor = Mentor.objects.get(id=student.mentor_responsible)
+            mentor.add_notification(f"New Request from student {student.first_name} {student.last_name}")
+            mentor.save()
             return redirect(reverse("users:student_mentor_request"))
     else:
         student_id = request.user.id
