@@ -45,7 +45,7 @@ def get_mentor_ids():
         # Add more fake IDs as needed
     ]
 
-
+#פונקציית התחברות לאתר
 def login_view(request):
     if request.method == "POST":
         form = CustomAuthenticationForm(request, data=request.POST)
@@ -103,7 +103,7 @@ def login_view(request):
 
     return render(request, "login.html", {"form": form})
 
-
+#פונקציית הרשמה לאתר
 def register_view(request):
     mentor_ids = get_mentor_ids()  # Assuming you have a function to get mentor IDs
 
@@ -185,8 +185,9 @@ def transition_stu(request):
 def transition_men(request):
     return render(request, "transition_men.html")
 
-
+#מסך סטודנטים של מנטור
 @login_required(login_url="/users/login")
+@mentor_required
 def mentor_studentlist(request):
     # Query all students from the database
     students = Student.objects.filter(mentor_responsible=request.user.id)
@@ -197,6 +198,7 @@ def mentor_studentlist(request):
     return render(request, "mentor_studentlist.html", context)
 
 
+#התנתקות
 def logout_view(request):
     if request.method == "POST":
         logout(request)
@@ -204,8 +206,9 @@ def logout_view(request):
     return redirect("homepage")
 
 
+#עריכת פרופיל של סטודנט
 @login_required(login_url="/users/login/")
-@student_required
+@student_required #בודק האם הוא סטודנט
 def student_profile(request):
     if request.method == "POST":
         user_id = request.POST.get("user_id")
@@ -272,9 +275,9 @@ def student_level_up(request):
     request_obj.save()
     return redirect("users:student_profile")
 
-
+#עריכת פרופיל של מנטור
 @login_required(login_url="/users/login/")
-@mentor_required
+@mentor_required #בדיקה האם הוא באמת מנטור
 def mentor_profile(request):
     if request.method == "POST":
         user_id = request.POST.get("user_id")
@@ -359,6 +362,7 @@ def add_response(request, request_id):
     return redirect('users:mentor_requests')
 
 
+#בקשה ממנטור לאדמין 
 @mentor_required
 def submit_help_request(request):
     help_requests = None
@@ -379,6 +383,7 @@ def submit_help_request(request):
     )
 
 
+#מחיקה של בקשה מרשימה של מנטור
 @mentor_required
 def delete_help_request(request, request_id):
     # print("dasdasfasd")
@@ -390,6 +395,7 @@ def delete_help_request(request, request_id):
     return render(request, "submit_help_request.html")
 
 
+#מסך שאלות לפי רמת קושי 
 @login_required(login_url="/users/login/")
 def questions_list(request):
     all_questions = Question.objects.all()
@@ -411,7 +417,7 @@ def questions_list(request):
 from django.shortcuts import get_object_or_404
 
 
-
+#בקשה מסטודנט למנטור
 @student_required
 def student_mentor_request(request):
     st_m_request = None
@@ -439,7 +445,7 @@ def student_mentor_request(request):
         {"form": form, "requests": st_m_requests},
     )
 
-
+#סטודנט מוחק בקשה למנטור
 @student_required
 def delete_student_mentor_request(request, request_id):
     st_m_request = StudentMentorRequest.objects.get(id=request_id)
@@ -450,7 +456,8 @@ def delete_student_mentor_request(request, request_id):
     return render(request, "student_mentor_request.html")
 
 
-@student_required
+#דירוג אתר ודירוג מנטור
+@student_required #בדיקה שהוא באמת סטודנט
 def student_feedback(request):
     user = request.user
 
@@ -575,6 +582,7 @@ class SetNewPasswordView(View):
         return render(request, "set_new_password.html", {"form": form})
 
 
+#מתכנת - בקשת עזרה מהבינה מלאכותית במסך השאלה
 @login_required(login_url="/users/login/")
 def get_hint(request, question_id):
     # Fetch the question text using the question_id
@@ -599,7 +607,9 @@ def get_hint(request, question_id):
 
     except Exception as e:
         return JsonResponse({"error": f"An error occurred: {e}"})
-    
+
+
+#מתכנת - הגשה של שאלה
 @login_required(login_url="/users/login/")
 def answer_question(request, question_id):
     # Fetch the original question using the ID provided in the URL
@@ -608,11 +618,15 @@ def answer_question(request, question_id):
     print(question_id)
     
     # Check if the student already has a copy of the question
-    question = Question.objects.filter(
+    
+
+    
+    if request.method == 'POST':
+        question = Question.objects.filter(
         answered_by=request.user.id,
         original_question_id=original_question.id
-    ).first()
-    if not question:
+        ).first()
+        if not question:
         # Create a copy of the question for the student with the original question ID
             question = Question.objects.create(
                 user=request.user.student.mentor_responsible,
@@ -621,11 +635,6 @@ def answer_question(request, question_id):
                 question_text=original_question.question_text,
                 level=original_question.level
             )
-
-    
-    if request.method == 'POST':
-      
-
         
         code_answer = request.POST.get('code_answer')
         print("im in the post method ")
@@ -647,7 +656,7 @@ def answer_question(request, question_id):
 
         return redirect(reverse('users:questions_list'))
 
-    return render(request, 'answer_question.html', {'question': question})
+    return render(request, 'answer_question.html', {'question': original_question})
 
 @login_required(login_url="/users/login/")
 @student_required
@@ -676,6 +685,8 @@ def mentor_submissions(request):
 
     return render(request, 'mentor_submissions.html', {'questions': questions})
 
+
+#מנטור - שליחת משוב לסטודנט עבור קוד + בדיקה
 @login_required(login_url="/users/login/")
 @mentor_required
 def grade_question(request, question_id):
@@ -712,6 +723,7 @@ def grade_question(request, question_id):
 
     return render(request, 'grade_question.html', {'question': question})
 
+#מחיקת התראות של כולם 
 @login_required(login_url="/users/login/")
 def clear_notifications(request):
     user = request.user
