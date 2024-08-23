@@ -1,5 +1,5 @@
 
-# Project Setup
+# Project Setup CodeForU
 
 ## יצירת סביבה ווירטואלית
 על מנת ליצור סביבה ווירטואלית, השתמשו בפקודה הבאה:
@@ -31,3 +31,9 @@ python3 manage.py runserver
 ```bash
 py manage.py runserver
 ```
+
+## התחברות לשרת
+
+לאחר הרצת השרת בהצלחה, תופיע כתובת IP בטרמינל. התחבר לכתובת זו דרך דפדפן אינטרנט. עם ההתחברות, תראה את מסך הבית של הפרויקט שנראה כך:
+
+![Home Screen](https://i.imghippo.com/files/mGu8D1724399834.png)
